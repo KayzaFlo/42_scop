@@ -1,4 +1,4 @@
-# miniRT
+# scop
 scop is a 42's specialization project that introduce us to OpenGL and 3D visualization.
 
 ## Description
