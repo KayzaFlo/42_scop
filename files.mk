@@ -1,0 +1,3 @@
+MAIN_FILE = $(SOURCEDIR)main.cpp
+
+SRC =		$(MAIN_FILE)
