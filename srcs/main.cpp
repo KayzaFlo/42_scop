@@ -1,15 +1,8 @@
-// #define GLFW_INCLUDE_GLCOREARB
-// #define GLFW_INCLUDE_NONE
-#include <stdio.h>
-#include <stdlib.h>
-// #include </Users/fgeslin/homebrew/include/GL/glew.h>
-#include </Users/fgeslin/homebrew/include/GLFW/glfw3.h>
-// #include <GLFW/glfw3.h>
-// #include "glfw3.h"
+#define GL_SILENCE_DEPRECATION
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 
-// void a() {}
 
 int main()
 {
@@ -31,6 +24,7 @@ int main()
 	std::cout << "LOOP" << std::endl;
 	while (!glfwWindowShouldClose(window)) 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(0);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
