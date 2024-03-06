@@ -9,12 +9,15 @@ HEADERDIR = includes/
 
 MAIN_FILE = $(SOURCEDIR)main.cpp
 
-SRC =		$(MAIN_FILE)
+SRC =		$(MAIN_FILE) \
+			lib/glad/src/glad.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 GLFW = 		lib/glfw-3.4.bin.MACOS
+GLAD = 		lib/glad
 
 CCHEADERS = -I$(GLFW)/include/ \
+			-I$(GLAD)/include/ \
 
 CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
 
