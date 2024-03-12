@@ -8,11 +8,12 @@
 void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void		setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO );
+void		setupTex( uint32_t * );
 
 // current step : https://learnopengl.com/Getting-started/Hello-Triangle
 
 GLFWwindow*	setupLibs() {
-	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automaticly to "Contents/Resources"
+	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
 	if (!glfwInit())
 		throw std::runtime_error("failed to initialize GLFW");
 
@@ -33,14 +34,20 @@ GLFWwindow*	setupLibs() {
 	return window;
 }
 
-void	render(GLFWwindow *window, Shader shader, uint32_t VAO) {
+void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture ) {
+	(void)texture;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// uniformColor shader
 	float timeValue = glfwGetTime();
 	float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 	shader.setUniform("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
+
 	// shader.use(); // If const : not necessary to call every frame
+
+	// bind Texture
+	// glBindTexture(GL_TEXTURE_2D, texture);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
@@ -59,7 +66,7 @@ int main()
 		std::cerr << e.what() << '\n';
 		return -1;
 	}
-	Shader		shader( "srcs/shaders/vertexColor.vs", "srcs/shaders/vertexColor.fs" );
+	Shader		shader( "srcs/shaders/texture.vs", "srcs/shaders/texture.fs" );
 	std::cout << shader.ID << std::endl;
 	
 	// On Resized
@@ -68,12 +75,16 @@ int main()
 
 	uint32_t	VBO, VAO, EBO;
 	setupVertices( &VBO, &VAO, &EBO );
+	uint32_t	texture;
+	setupTex( &texture );
+	// bind Texture
+	// glBindTexture(GL_TEXTURE_2D, texture);
 
 	// Render Loop
 	std::cout << "LOOP" << std::endl;
 	shader.use();
 	while (!glfwWindowShouldClose(window))
-		render(window, shader, VAO);
+		render( window, shader, VAO, texture );
 	
 	// Terminate
 	std::cout << "TERMINATE" << std::endl;

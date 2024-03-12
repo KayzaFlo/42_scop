@@ -10,7 +10,11 @@ HEADERDIR = includes/
 MAIN_FILE = $(SOURCEDIR)main.cpp
 
 SRC =		$(MAIN_FILE) \
-			lib/glad/src/glad.cpp
+			$(SOURCEDIR)Shader.cpp \
+			$(SOURCEDIR)events.cpp \
+			$(SOURCEDIR)vertices.cpp \
+			lib/glad/src/glad.cpp \
+			lib/stb/src/stb_image.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 GLFW = 		lib/glfw-3.4.bin.MACOS
@@ -18,6 +22,7 @@ GLAD = 		lib/glad
 
 CCHEADERS = -I$(GLFW)/include/ \
 			-I$(GLAD)/include/ \
+			-Ilib/stb/include/ \
 
 CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
 
