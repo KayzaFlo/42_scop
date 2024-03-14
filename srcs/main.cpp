@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <scopm.hpp>
 
 #include "Shader.hpp"
 
@@ -58,6 +59,8 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 
 int main()
 {
+	scopm::Vector3 ah(1, 1, 1);
+
 	std::cout << "START" << std::endl;
 	GLFWwindow*	window;
 	try {
@@ -93,5 +96,29 @@ int main()
     glDeleteProgram(shader.ID);
 
 	glfwTerminate();
+
+
+const float	rawTest[] = {
+	1, -4, 5, 0,
+	0.3, 1, 0, 80,
+	0, 20, 1, 85.9,
+	6, 2.12, 13, 1
+};
+const float	trueMat[] = {
+	2, 0, 0, 56,
+	0, 2, 0, 7,
+	0, 0, 2, -54,
+	0, 0, 0, 2
+};
+
+	Matrix4x4 matrix;
+	std::cout << matrix << std::endl;
+	std::cout << Matrix4x4::identity << std::endl;
+	Matrix4x4 testM((float *)rawTest);
+	std::cout << testM << std::endl;
+	testM = (Matrix4x4::identity * 2) * Matrix4x4((float *)trueMat);
+	std::cout << testM << std::endl;
+	std::cout << testM * Matrix4x4::identity << std::endl;
+
 	return 0;
 }

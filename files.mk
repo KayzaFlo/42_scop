@@ -17,16 +17,17 @@ SRC =		$(MAIN_FILE) \
 			lib/stb/src/stb_image.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
-GLFW = 		lib/glfw-3.4.bin.MACOS
+GLFW = 		lib/glfw
 GLAD = 		lib/glad
 
 CCHEADERS = -I$(GLFW)/include/ \
 			-I$(GLAD)/include/ \
 			-Ilib/stb/include/ \
+			-Isrcs/scopm/include/ \
 
 CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
 
-CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
+CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -std=c++11
 
 #####	COLORS		###################################################
 WHITE		:= \033[0m
