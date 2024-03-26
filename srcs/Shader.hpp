@@ -2,6 +2,7 @@
 # define SHADER_HPP__
 
 #include <glad/glad.h>
+#include <scopm.hpp>
 
 #include <string>
 #include <fstream>
@@ -25,6 +26,7 @@ public:
 	void	setUniform( const std::string &name, float x, float y ) const;
 	void	setUniform( const std::string &name, float x, float y, float z ) const;
 	void	setUniform( const std::string &name, float x, float y, float z, float w ) const;
+	void	setUniform( const std::string &name, Matrix4x4 mat ) const;
 
 	void	checkCompileErrors(unsigned int shader, std::string type);
 };

@@ -13,6 +13,8 @@ SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \
 			$(SOURCEDIR)events.cpp \
 			$(SOURCEDIR)vertices.cpp \
+			$(SOURCEDIR)scopm/src/Vector3.cpp \
+			$(SOURCEDIR)scopm/src/Matrix4x4.cpp \
 			lib/glad/src/glad.cpp \
 			lib/stb/src/stb_image.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)

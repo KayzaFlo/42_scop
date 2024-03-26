@@ -1,8 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <scopm.hpp>
 
 #include <iostream>
-#include <scopm.hpp>
 
 #include "Shader.hpp"
 
@@ -10,6 +10,9 @@ void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void		setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO );
 void		setupTex( uint32_t * );
+
+Matrix4x4	transform;
+double		timeElpased = 0;
 
 // current step : https://learnopengl.com/Getting-started/Hello-Triangle
 
@@ -45,6 +48,14 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 	float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 	shader.setUniform("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
 
+	transform = Matrix4x4::identity;
+	transform = Matrix4x4::Translate( transform, Vector3( 0.5, 0. , 0. ) );
+	transform = Matrix4x4::Rotate( transform, (float)glfwGetTime(), Vector3( 0, 0, 1 ) );
+	transform = Matrix4x4::Scale( transform, Vector3( 1 / (float)glfwGetTime(), 1 / (float)glfwGetTime(), 1. ) );
+	timeElpased++;
+	std::cout << transform << std::endl;
+	shader.setUniform("transform", transform);
+
 	// shader.use(); // If const : not necessary to call every frame
 
 	// bind Texture
@@ -59,8 +70,6 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 
 int main()
 {
-	scopm::Vector3 ah(1, 1, 1);
-
 	std::cout << "START" << std::endl;
 	GLFWwindow*	window;
 	try {
@@ -97,28 +106,6 @@ int main()
 
 	glfwTerminate();
 
-
-const float	rawTest[] = {
-	1, -4, 5, 0,
-	0.3, 1, 0, 80,
-	0, 20, 1, 85.9,
-	6, 2.12, 13, 1
-};
-const float	trueMat[] = {
-	2, 0, 0, 56,
-	0, 2, 0, 7,
-	0, 0, 2, -54,
-	0, 0, 0, 2
-};
-
-	Matrix4x4 matrix;
-	std::cout << matrix << std::endl;
-	std::cout << Matrix4x4::identity << std::endl;
-	Matrix4x4 testM((float *)rawTest);
-	std::cout << testM << std::endl;
-	testM = (Matrix4x4::identity * 2) * Matrix4x4((float *)trueMat);
-	std::cout << testM << std::endl;
-	std::cout << testM * Matrix4x4::identity << std::endl;
 
 	return 0;
 }
