@@ -37,6 +37,7 @@ namespace scopm
 		static Matrix4x4	Rotate( Matrix4x4 transformationMatrix, float angleInRad, Vector3 normalizedVecAxis );
 		static Matrix4x4	Scale( Matrix4x4 transformationMatrix, Vector3 scale );
 		static Matrix4x4	Perspective( float fovy, float aspect, float zNear, float zFar );
+		static Matrix4x4	LookAt( Vector3 eye, Vector3 center, Vector3 up );
 
 		static const	Matrix4x4 zero;
 		static const	Matrix4x4 identity;

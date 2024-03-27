@@ -11,11 +11,10 @@
 
 void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void		mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void		scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void		setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO );
 void		setupTex( uint32_t * );
-
-Matrix4x4	transform;
-double		timeElpased = 0;
 
 Vector3 cubePositions[] = {
     Vector3( 0.0f,  0.0f,  0.0f),
@@ -29,6 +28,8 @@ Vector3 cubePositions[] = {
     Vector3( 1.5f,  0.2f, -1.5f),
     Vector3(-1.3f,  1.0f, -1.5f) 
 };
+
+Camera	camera(Vector3(0.0f, 0.0f,  3.0f));
 
 // current step : https://learnopengl.com/Getting-started/Hello-Triangle
 
@@ -70,22 +71,13 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 
 	Matrix4x4	model = Matrix4x4::Rotate(Matrix4x4::identity, -0.96, Vector3(1,0,0));
 	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0.5, 1, 1).normalized());
-	Matrix4x4	view = Matrix4x4::Translate(Matrix4x4::identity, Vector3(0,0,-5));
-	Matrix4x4	projection = Matrix4x4::Perspective(0.785f, (float)w/(float)h, 0.1f, 100);
-	shader.setUniform("model", model);
-	std::cout << "model:\n" << model;
-	shader.setUniform("view", view);
-	std::cout << "view:\n" << view;
-	shader.setUniform("projection", projection);
-	std::cout << "projection:\n" << projection;
 
-	// transform = Matrix4x4::identity;
-	// transform = Matrix4x4::Translate( transform, Vector3( 0.5, -0.5, 0. ) );
-	// transform = Matrix4x4::Rotate( transform, (float)glfwGetTime(), Vector3( 0, 0, 1 ) );
-	// transform = Matrix4x4::Scale( transform, Vector3( 1 / (float)glfwGetTime(), 1 / (float)glfwGetTime(), 1. ) );
-	// timeElpased++;
-	// std::cout << transform;
-	// shader.setUniform("transform", transform);
+	Matrix4x4	view = camera.GetViewMatrix();
+	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
+	shader.setUniform("model", model);
+	shader.setUniform("view", view);
+	shader.setUniform("projection", projection);
+	// std::cout << "model:\n" << model << "view:\n" << view << "projection:\n" << projection;
 
 	// shader.use(); // If const : not necessary to call every frame
 
@@ -132,6 +124,9 @@ int main()
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, keypressed_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+	glfwSetScrollCallback(window, scroll_callback);
 
 	uint32_t	VBO, VAO, EBO;
 	setupVertices( &VBO, &VAO, &EBO );

@@ -101,6 +101,7 @@ Matrix4x4	Matrix4x4::Translate( Matrix4x4 transformationMatrix, Vector3 translat
 }
 // Local Rotate
 Matrix4x4	Matrix4x4::Rotate( Matrix4x4 transformationMatrix, float angleInRad, Vector3 normalizedVecAxis ) {
+	normalizedVecAxis = normalizedVecAxis.normalized();
 	float	t = angleInRad;
 	float	u = normalizedVecAxis.x;
 	float	v = normalizedVecAxis.y;
@@ -154,14 +155,27 @@ Matrix4x4	Matrix4x4::Perspective( float fovy, float aspect, float zNear, float z
 	float a = 1 / (aspect * tanHalfFovy);
 	float b = 1 / (tanHalfFovy);
 	float c = - (zFar + zNear) / (zFar - zNear);
-	float e = -1;
 	float d = - (2 * zFar * zNear) / (zFar - zNear);
+	float e = -1;
 	float	persRaw[] = {
 		a, 0, 0, 0,
 		0, b, 0, 0,
 		0, 0, c, d,
 		0, 0, e, 0 };
 	return Matrix4x4( persRaw );
+}
+Matrix4x4	Matrix4x4::LookAt( Vector3 eye, Vector3 center, Vector3 up ){
+	Vector3 const f( (center - eye).normalized() );
+	Vector3 const s( Vector3::Cross(f, up).normalized() );
+	Vector3 const u( Vector3::Cross(s, f) );
+
+	float	lookAtRaw[] = {
+		 s.x,	 s.y,	 s.z,	-Vector3::Dot(s, eye),
+		 u.x,	 u.y,	 u.z,	-Vector3::Dot(u, eye),
+		-f.x,	-f.y,	-f.z,	 Vector3::Dot(f, eye),
+		 0,		 0,		 0,		 1 };
+	return Matrix4x4( lookAtRaw );
+
 }
 
 
