@@ -7,16 +7,29 @@
 
 float vertices[] = { // tbd by Parsing
 	// positions			// colors			// texCoords
-	 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0,	1.0f, 1.0f,	// top right
-	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0,	1.0f, 0.0f,	// bottom right
-	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0,	0.0f, 0.0f,	// bottom left
-	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0,	0.0f, 1.0f,	// top left 
-	 0.0f,  1.0f, 0.0f,		0.0f, 0.0f, 1.0,	0.5f, 1.5f	// top top 
+	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0,	1.0f, 1.0f,	// top right
+	 0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0,	1.0f, 0.0f,	// bottom right
+	-0.5f, -0.5f,  0.5f,	1.0f, 0.0f, 0.0,	0.0f, 0.0f,	// bottom left
+	-0.5f,  0.5f,  0.5f,	0.0f, 1.0f, 0.0,	0.0f, 1.0f,	// top left 
+
+	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0,	1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0,	1.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0,	0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f, 0.0,	0.0f, 1.0f
 };
 uint32_t indices[] = {  // note that we start from 0!
 	0, 1, 3,   // first triangle
 	1, 2, 3,    // second triangle
-	0, 3, 4    // second triangle
+	0, 3, 4,
+	3, 4, 7,
+	4, 5, 7,
+	5, 6, 7,
+	3, 6, 7,
+	2, 3, 6,
+	0, 4, 5,
+	0, 1, 5,
+	1, 2, 5,
+	2, 5, 6
 };
 
 void	setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO ) {
@@ -56,6 +69,7 @@ void	setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO ) {
 	// settings
 	glPolygonMode(GL_FRONT, GL_FILL); // default
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
+	glEnable(GL_DEPTH_TEST);
 }
 
 #include <stb_image.h>

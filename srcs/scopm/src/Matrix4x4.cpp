@@ -146,7 +146,23 @@ Matrix4x4	Matrix4x4::Scale( Matrix4x4 transformationMatrix, Vector3 scale ) {
 		0, 0, 0, 1 };
 	return Matrix4x4( scaleRaw ) * transformationMatrix;
 }
+Matrix4x4	Matrix4x4::Perspective( float fovy, float aspect, float zNear, float zFar ){
 
+	float rad = fovy;
+	float tanHalfFovy = tan(rad / 2);
+
+	float a = 1 / (aspect * tanHalfFovy);
+	float b = 1 / (tanHalfFovy);
+	float c = - (zFar + zNear) / (zFar - zNear);
+	float e = -1;
+	float d = - (2 * zFar * zNear) / (zFar - zNear);
+	float	persRaw[] = {
+		a, 0, 0, 0,
+		0, b, 0, 0,
+		0, 0, c, d,
+		0, 0, e, 0 };
+	return Matrix4x4( persRaw );
+}
 
 
 std::ostream &	operator<<( std::ostream & o, Matrix4x4 const & rhs ) {
