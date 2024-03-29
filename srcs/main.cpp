@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "Shader.hpp"
+#include "Mesh.hpp"
+#include "Model.hpp"
 
 #define SCR_WIDTH 1920
 #define SCR_HEIGHT 1080
@@ -13,8 +15,7 @@ void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void		mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void		scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void		setupVertices( uint32_t *VBO, uint32_t *VAO, uint32_t *EBO );
-void		setupTex( uint32_t * );
+Mesh		box();
 
 Vector3 cubePositions[] = {
     Vector3( 0.0f,  0.0f,  0.0f),
@@ -55,8 +56,8 @@ GLFWwindow*	setupLibs() {
 	return window;
 }
 
-void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture ) {
-	(void)texture;
+void	render( GLFWwindow *window, Shader shader, Mesh &mesh ) {
+	// (void)texture;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -69,8 +70,11 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 
-	Matrix4x4	model = Matrix4x4::Rotate(Matrix4x4::identity, -0.96, Vector3(1,0,0));
-	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0.5, 1, 1).normalized());
+	// Matrix4x4	model = Matrix4x4::identity;
+	Matrix4x4	model = Matrix4x4::Rotate(Matrix4x4::identity, 0, Vector3(1,0,0));
+	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
+	
+	shader.use(); // If const : not necessary to call every frame
 
 	Matrix4x4	view = camera.GetViewMatrix();
 	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
@@ -79,30 +83,23 @@ void	render( GLFWwindow *window, Shader shader, uint32_t VAO, uint32_t texture )
 	shader.setUniform("projection", projection);
 	// std::cout << "model:\n" << model << "view:\n" << view << "projection:\n" << projection;
 
-	// shader.use(); // If const : not necessary to call every frame
+	// for(unsigned int i = 0; i < 10; i++)
+	// {
+	// 	model = Matrix4x4::Translate(Matrix4x4::identity, cubePositions[i]);
+	// 	float angle = 20.0f * i;
+	// 	if ( i % 3 == 0 )
+	// 		model = Matrix4x4::Rotate(model, angle * (M_PI/180) + (float)glfwGetTime() / 5, Vector3(1.0f, 0.3f, 0.5f));
+	// 	else
+	// 		model = Matrix4x4::Rotate(model, angle * (M_PI/180), Vector3(1.0f, 0.3f, 0.5f));
+	// 	shader.setUniform("model", model);
 
-	// bind Texture
-	// glBindTexture(GL_TEXTURE_2D, texture);
-
-	glBindVertexArray(VAO);
-	for(unsigned int i = 0; i < 10; i++)
-	{
-		model = Matrix4x4::Translate(Matrix4x4::identity, cubePositions[i]);
-		float angle = 20.0f * i;
-		if ( i % 3 == 0 )
-			model = Matrix4x4::Rotate(model, angle * (M_PI/180) + (float)glfwGetTime() / 5, Vector3(1.0f, 0.3f, 0.5f));
-		else
-			model = Matrix4x4::Rotate(model, angle * (M_PI/180), Vector3(1.0f, 0.3f, 0.5f));
-		shader.setUniform("model", model);
-
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // use EBO
-		// glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
+	// 	mesh.Draw(shader);
+	// }
 	
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // use EBO
-	// glDrawArrays(GL_TRIANGLES, 0, 36); // without EBO / faces
-
-
+		mesh.Draw(shader);
+	
+	// glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // use EBO
+	// // glDrawArrays(GL_TRIANGLES, 0, 36); // without EBO / faces
 
 	glfwSwapBuffers(window);	// Render this iteration buffer
 	glfwPollEvents();	// Check if any events are triggered andd call correspind functions / callbacks
@@ -119,7 +116,6 @@ int main()
 		return -1;
 	}
 	Shader		shader( "srcs/shaders/texture.vs", "srcs/shaders/texture.fs" );
-	std::cout << shader.ID << std::endl;
 	
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -128,27 +124,24 @@ int main()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 	glfwSetScrollCallback(window, scroll_callback);
 
-	uint32_t	VBO, VAO, EBO;
-	setupVertices( &VBO, &VAO, &EBO );
-	uint32_t	texture;
-	setupTex( &texture );
-	// bind Texture
-	// glBindTexture(GL_TEXTURE_2D, texture);
+	glEnable(GL_DEPTH_TEST);
+
+	Mesh	boxMesh = box();
+	char const *	modelPath = "resources/42.obj";
+	Model	model((char*)modelPath);
+
+	// boxMesh.print();
+	// model.meshes[0].print();
 
 	// Render Loop
 	std::cout << "LOOP" << std::endl;
 	shader.use();
 	while (!glfwWindowShouldClose(window))
-		render( window, shader, VAO, texture );
+		render( window, shader, model.meshes[0] );
 	
 	// Terminate
 	std::cout << "TERMINATE" << std::endl;
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shader.ID);
-
 	glfwTerminate();
-
 
 	return 0;
 }

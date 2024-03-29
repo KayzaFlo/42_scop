@@ -17,6 +17,7 @@ public:
 	uint32_t	ID;
 
 	Shader( const char* vertexPath, const char* fragmentPath );
+	~Shader();
 
 	void use();
 

@@ -1,6 +1,6 @@
 #####	CONFIG		############################################################
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -std=c++11
 NAME = scop
 OBJDIR = obj/
 BUILDDIR = builds/
@@ -12,7 +12,7 @@ MAIN_FILE = $(SOURCEDIR)main.cpp
 SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \
 			$(SOURCEDIR)events.cpp \
-			$(SOURCEDIR)vertices.cpp \
+			$(SOURCEDIR)box.cpp \
 			$(SOURCEDIR)scopm/src/Vector3.cpp \
 			$(SOURCEDIR)scopm/src/Matrix4x4.cpp \
 			lib/glad/src/glad.cpp \
