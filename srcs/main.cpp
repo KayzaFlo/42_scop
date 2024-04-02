@@ -56,7 +56,7 @@ GLFWwindow*	setupLibs() {
 	return window;
 }
 
-void	render( GLFWwindow *window, Shader shader, Mesh &mesh ) {
+void	render( GLFWwindow *window, Shader shader, Model &mesh ) {
 	// (void)texture;
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -72,7 +72,7 @@ void	render( GLFWwindow *window, Shader shader, Mesh &mesh ) {
 
 	// Matrix4x4	model = Matrix4x4::identity;
 	Matrix4x4	model = Matrix4x4::Rotate(Matrix4x4::identity, 0, Vector3(1,0,0));
-	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
+	// model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
 	
 	shader.use(); // If const : not necessary to call every frame
 
@@ -105,8 +105,11 @@ void	render( GLFWwindow *window, Shader shader, Mesh &mesh ) {
 	glfwPollEvents();	// Check if any events are triggered andd call correspind functions / callbacks
 }
 
-int main()
+int main( int argc, char **argv )
 {
+	if ( argc != 3 )
+		return 1;
+
 	std::cout << "START" << std::endl;
 	GLFWwindow*	window;
 	try {
@@ -115,7 +118,9 @@ int main()
 		std::cerr << e.what() << '\n';
 		return -1;
 	}
-	Shader		shader( "srcs/shaders/texture.vs", "srcs/shaders/texture.fs" );
+	std::string	vsPath = "srcs/shaders/" + std::string(argv[2]) + ".vs";
+	std::string	fsPath = "srcs/shaders/" + std::string(argv[2]) + ".fs";
+	Shader		shader( vsPath.c_str(), fsPath.c_str() );
 	
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -125,10 +130,10 @@ int main()
 	glfwSetScrollCallback(window, scroll_callback);
 
 	glEnable(GL_DEPTH_TEST);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	Mesh	boxMesh = box();
-	char const *	modelPath = "resources/42.obj";
-	Model	model((char*)modelPath);
+	// Mesh	boxMesh = box();
+	Model	model(argv[1]);
 
 	// boxMesh.print();
 	// model.meshes[0].print();
@@ -137,7 +142,7 @@ int main()
 	std::cout << "LOOP" << std::endl;
 	shader.use();
 	while (!glfwWindowShouldClose(window))
-		render( window, shader, model.meshes[0] );
+		render( window, shader, model );
 	
 	// Terminate
 	std::cout << "TERMINATE" << std::endl;

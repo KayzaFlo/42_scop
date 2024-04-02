@@ -37,7 +37,7 @@ Mesh	box() {
 	uint32_t	tex;
 	setupTex(&tex);
 
-	std::vector<Vertex>		vertices = { // tbd by Parsing
+	std::deque<Vertex>		vertices = { // tbd by Parsing
 		// positions		   // colors now normal	// texCoords
 		{{ 0.5f,  0.5f,  0.5f},	{1.0f, 0.0f, 0.0},	{1.0f, 1.0f}},	// top right
 		{{ 0.5f, -0.5f,  0.5f},	{0.0f, 1.0f, 0.0},	{1.0f, 0.0f}},	// bottom right
@@ -49,7 +49,7 @@ Mesh	box() {
 		{{-0.5f, -0.5f, -0.5f},	{1.0f, 0.0f, 0.0},	{0.0f, 0.0f}},
 		{{-0.5f,  0.5f, -0.5f},	{0.0f, 1.0f, 0.0},	{0.0f, 1.0f}}
 	};
-	std::vector<uint32_t>	indices = {
+	std::deque<uint32_t>	indices = {
 		0, 1, 3,
 		1, 2, 3,
 		0, 3, 4,
@@ -63,9 +63,9 @@ Mesh	box() {
 		1, 2, 5,
 		2, 5, 6
 	};
-	std::vector<Texture>	textures = {
+	std::deque<Texture>	textures = {
 		{ .id = 0, .type = "texture_diffuse" }
 	};
 
-	return Mesh(vertices, indices, textures);
+	return Mesh("box", vertices, indices, textures);
 }

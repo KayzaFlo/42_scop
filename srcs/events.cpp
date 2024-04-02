@@ -23,7 +23,7 @@ void keypressed_callback(GLFWwindow *window, int key, int scancode, int action, 
 	(void)scancode;
 	(void)action;
 	(void)mods;
-	std::cout << "key: " << key << " - scancode: " << scancode << " - action: " << action << " - mods: " << mods << std::endl;
+	// std::cout << "key: " << key << " - scancode: " << scancode << " - action: " << action << " - mods: " << mods << std::endl;
 	if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )	// Quit with Escape key
 		glfwSetWindowShouldClose(window, true);
 
@@ -35,6 +35,10 @@ void keypressed_callback(GLFWwindow *window, int key, int scancode, int action, 
 		camera.ProcessKeyboard( LEFT, 1.0f/60.0f );
     if ( glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS )
 		camera.ProcessKeyboard( RIGHT, 1.0f/60.0f );
+    if ( glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS )
+		camera.ProcessKeyboard( UP, 1.0f/60.0f );
+    if ( glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS )
+		camera.ProcessKeyboard( DOWN, 1.0f/60.0f );
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {

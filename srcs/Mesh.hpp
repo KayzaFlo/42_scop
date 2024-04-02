@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <vector>
+#include <deque>
 #include <scopm.hpp>
 
 #include "Shader.hpp"
@@ -34,15 +34,16 @@ class Mesh
 {
 public:
 	std::string				name;					// o
-	std::vector<Vertex>		vertices;				// v // vn // vt
+	std::deque<Vertex>		vertices;				// v // vn // vt
 	// ???											// s
-	std::vector<uint32_t>	indices;				// f?
-	std::vector<Texture>	textures;				// tex
+	std::deque<uint32_t>	indices;				// f?
+	std::deque<Texture>	textures;				// tex
 	// Material				_mat;					// usemtl, mtllib
 	uint	VAO;
 
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {
-		std::cout << "Mesh's constructor called" << std::endl;
+	Mesh(std::string name, std::deque<Vertex> vertices, std::deque<unsigned int> indices, std::deque<Texture> textures) {
+		std::cout << "Mesh's constructor called (" << name << ")" << std::endl;
+		this->name = name;
 		this->vertices = vertices;
 		this->indices = indices;
 		this->textures = textures;
@@ -51,7 +52,7 @@ public:
         setupMesh();
 	}
 	~Mesh() {
-		std::cout << "Mesh's destructor called" << std::endl;
+		std::cout << "Mesh's destructor called (" << this->name << ")" << std::endl;
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 	}
@@ -105,7 +106,7 @@ private:
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);  
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
