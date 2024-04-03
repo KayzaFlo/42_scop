@@ -7,6 +7,7 @@
 #include "Shader.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
+// #include "ModelAssimp.hpp"
 
 #define SCR_WIDTH 1920
 #define SCR_HEIGHT 1080
@@ -30,7 +31,7 @@ Vector3 cubePositions[] = {
     Vector3(-1.3f,  1.0f, -1.5f) 
 };
 
-Camera	camera(Vector3(0.0f, 0.0f,  3.0f));
+Camera	camera(Vector3(0.0f, 1.8f, 6.0f));
 
 // current step : https://learnopengl.com/Getting-started/Hello-Triangle
 
@@ -62,19 +63,19 @@ void	render( GLFWwindow *window, Shader shader, Model &mesh ) {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	// uniformColor shader
-	float timeValue = glfwGetTime();
-	float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-	shader.setUniform("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
+	// float timeValue = glfwGetTime();
+	// float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+	// shader.setUniform("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
 
 
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 
-	// Matrix4x4	model = Matrix4x4::identity;
-	Matrix4x4	model = Matrix4x4::Rotate(Matrix4x4::identity, 0, Vector3(1,0,0));
-	// model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
+	Matrix4x4	model = Matrix4x4::identity;
+	model = Matrix4x4::Rotate(model, 0, Vector3(1,0,0));
+	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
 	
-	shader.use(); // If const : not necessary to call every frame
+	// shader.use(); // If const : not necessary to call every frame
 
 	Matrix4x4	view = camera.GetViewMatrix();
 	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
@@ -128,6 +129,9 @@ int main( int argc, char **argv )
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 	glfwSetScrollCallback(window, scroll_callback);
+
+    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+    stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

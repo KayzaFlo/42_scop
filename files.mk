@@ -12,7 +12,6 @@ MAIN_FILE = $(SOURCEDIR)main.cpp
 SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \
 			$(SOURCEDIR)events.cpp \
-			$(SOURCEDIR)box.cpp \
 			$(SOURCEDIR)scopm/src/Vector3.cpp \
 			$(SOURCEDIR)scopm/src/Matrix4x4.cpp \
 			lib/glad/src/glad.cpp \
@@ -21,13 +20,15 @@ OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 GLFW = 		lib/glfw
 GLAD = 		lib/glad
+ASSIMP = 	lib/assimp
 
 CCHEADERS = -I$(GLFW)/include/ \
 			-I$(GLAD)/include/ \
+			-I$(ASSIMP)/include/ \
 			-Ilib/stb/include/ \
 			-Isrcs/scopm/include/ \
 
-CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
+CCLIBS =	-L$(GLFW)/lib-universal $(ASSIMP)/lib/libassimp.5.3.0.dylib -lglfw3 \
 
 CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -std=c++11
 

@@ -67,7 +67,9 @@ Matrix4x4		Matrix4x4::operator*( Matrix4x4 const & rhs ) const {
 			ret[i] += _raw[a] * rhs._raw[b];
 		}
 	}
-	return Matrix4x4( ret );
+	Matrix4x4 mat( ret );
+	std::free(ret);
+	return mat;
 }
 float			Matrix4x4::operator[]( int i ) const { return _raw[i]; }
 
@@ -121,9 +123,9 @@ Matrix4x4	Matrix4x4::Rotate( Matrix4x4 transformationMatrix, float angleInRad, V
 	float h = v * w * ( 1 - cos(t) ) + u * sqrt(u2v2w2) * sin(t);
 	float i = w2 + ( u2 + v2 ) * cos(t);
 
-	float _a = transformationMatrix.getRaw()[3];
-	float _b = transformationMatrix.getRaw()[7];
-	float _c = transformationMatrix.getRaw()[11];
+	float _a = transformationMatrix[3];
+	float _b = transformationMatrix[7];
+	float _c = transformationMatrix[11];
 
 	float x = ( _a * ( v2 + w2 ) - u * ( _b*v + _c*w )) * ( 1 - cos(t) ) + ( _b*w - _c*v ) * sin(t);
 	float y = ( _b * ( u2 + w2 ) - v * ( _a*u + _c*w )) * ( 1 - cos(t) ) + ( _c*u - _a*w ) * sin(t);

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <deque>
+#include <vector>
 #include <scopm.hpp>
 #include <sys/stat.h>
 #include <stb_image.h>
@@ -17,7 +17,7 @@ Mesh		box();
 class Model
 {
 public:
-	std::deque<Mesh>	meshes;
+	std::vector<Mesh>	meshes;
 	Model( char *path ) {
 		loadModel( path );
 	}
@@ -30,7 +30,7 @@ public:
 	}
 
 private:
-	// std::deque<Mesh>	meshes;
+	// std::vector<Mesh>	meshes;
 	std::string			directory;
 
 	void	loadModel( std::string path ) {
@@ -57,12 +57,12 @@ private:
 		setupTex(&tex);
 
 
-		// std::deque<Vertex>		vertices;
-		std::deque<s_Vector3>	vertices;
-		std::deque<s_Vector3>	normals;
-		std::deque<s_Vector2>	texCoords;
-		std::deque<uint>		indices;
-		std::deque<Texture>	textures = {
+		// std::vector<Vertex>		vertices;
+		std::vector<s_Vector3>	vertices;
+		std::vector<s_Vector3>	normals;
+		std::vector<s_Vector2>	texCoords;
+		std::vector<uint>		indices;
+		std::vector<Texture>	textures = {
 			{ .id = tex, .type = "texture_diffuse" }
 		};
 		std::string				name = "";
@@ -164,14 +164,14 @@ private:
 
 	void pushMesh(
 		std::string				name,
-		std::deque<s_Vector3>	vertices,
-		std::deque<s_Vector3>	normals,
-		std::deque<s_Vector2>	texCoords,
-		std::deque<uint>		indices,
-		std::deque<Texture>		textures
+		std::vector<s_Vector3>	vertices,
+		std::vector<s_Vector3>	normals,
+		std::vector<s_Vector2>	texCoords,
+		std::vector<uint>		indices,
+		std::vector<Texture>		textures
 		)
 	{
-		std::deque<Vertex>		ver;
+		std::vector<Vertex>		ver;
 
 		for (size_t i = 0; i < vertices.size(); i++) {
 			(void)normals;

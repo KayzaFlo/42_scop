@@ -11,7 +11,7 @@ uniform sampler2D ourTexture;
 
 void main()
 {
-	vec3 ambient = vec3(0., 0., 0.);
+	vec3 ambient = vec3(0.2863, 0.2667, 0.1804);
 	vec3 lightPos = vec3(5., 5., 5.);
 	vec3 lightColor = vec3(1., 1., 1.);
 	vec3 norm = normalize(Normal);

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <deque>
+#include <vector>
 #include <scopm.hpp>
 
 #include "Shader.hpp"
@@ -22,6 +22,7 @@ struct s_Vector3 {
 struct Texture {
 	uint32_t	id;
 	std::string	type;
+	std::string	path;
 };
 
 struct Vertex {
@@ -34,29 +35,32 @@ class Mesh
 {
 public:
 	std::string				name;					// o
-	std::deque<Vertex>		vertices;				// v // vn // vt
+	std::vector<Vertex>		vertices;				// v // vn // vt
 	// ???											// s
-	std::deque<uint32_t>	indices;				// f?
-	std::deque<Texture>	textures;				// tex
+	std::vector<uint32_t>	indices;				// f?
+	std::vector<Texture>		textures;				// tex
 	// Material				_mat;					// usemtl, mtllib
 	uint	VAO;
 
-	Mesh(std::string name, std::deque<Vertex> vertices, std::deque<unsigned int> indices, std::deque<Texture> textures) {
-		std::cout << "Mesh's constructor called (" << name << ")" << std::endl;
+	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {
+		// std::cout << "Mesh's constructor called (" << name << ")" << std::endl;
 		this->name = name;
 		this->vertices = vertices;
 		this->indices = indices;
 		this->textures = textures;
 
+		// print();
+
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
 	}
 	~Mesh() {
-		std::cout << "Mesh's destructor called (" << this->name << ")" << std::endl;
+		// std::cout << "Mesh's destructor called (" << this->name << ")" << std::endl;
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 	}
 	void	Draw(Shader &shader) {
+		// (void)shader;
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
 		for(unsigned int i = 0; i < textures.size(); i++)
@@ -70,7 +74,8 @@ public:
 			else if(name == "texture_specular")
 				number = std::to_string(specularNr++);
 
-			shader.setUniform(("material." + name + number).c_str(), (int)i);
+			// shader.setUniform(("material." + name + number).c_str(), (int)i);
+			(void)shader;
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
 		// draw mesh
@@ -83,15 +88,43 @@ public:
 	}
 
 	void print() {
-		for(size_t i = 0; i < vertices.size(); i++) {
-			std::cerr << C_GRY << vertices[i].position.x << ", " << vertices[i].position.y << ", " << vertices[i].position.z << std::endl;
-			std::cerr << C_GRY << vertices[i].normal.x << ", " << vertices[i].normal.y << ", " << vertices[i].normal.z << std::endl;
-			std::cerr << C_GRY << vertices[i].texCoords.x << ", " << vertices[i].texCoords.y << std::endl;
-			std::cerr << C_RST << "---" << std::endl;
+		std::cout << "o " << name << std::endl;
+		for (size_t i = 0; i < vertices.size(); i++) {
+			if ( abs(vertices[i].position.x) > 20 )
+				std::cerr << C_RED << "Weird value vert.pos.x: " << vertices[i].position.x << C_RST << std::endl;
+			if ( abs(vertices[i].position.y) > 20 )
+				std::cerr << C_RED << "Weird value vert.pos.y: " << vertices[i].position.y << C_RST << std::endl;
+			if ( abs(vertices[i].position.z) > 20 )
+				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << std::endl;
+			std::cout << "v " << vertices[i].position.x << " " << vertices[i].position.y << " " << vertices[i].position.z << std::endl;
 		}
-		for(size_t i = 0; i < indices.size(); i++) {
-			std::cerr << C_GRY << indices[i] << std::endl;
-			std::cerr << C_RST << "---" << std::endl;
+		std::cout << std::endl;
+		for (size_t i = 0; i < vertices.size(); i++) {
+			std::cout << "vn " << vertices[i].normal.x << " " << vertices[i].normal.y << " " << vertices[i].normal.z << std::endl;
+			if ( abs(vertices[i].normal.x) > 1 )
+				std::cerr << C_RED << "Weird value vert.normal.x: " << vertices[i].normal.x << C_RST << std::endl;
+			if ( abs(vertices[i].normal.y) > 1 )
+				std::cerr << C_RED << "Weird value vert.normal.y: " << vertices[i].normal.y << C_RST << std::endl;
+			if ( abs(vertices[i].normal.z) > 1 )
+				std::cerr << C_RED << "Weird value vert.normal.z: " << vertices[i].normal.z << C_RST << std::endl;
+		}
+		std::cout << std::endl;
+		for (size_t i = 0; i < vertices.size(); i++) {
+			std::cout << "vt " << vertices[i].texCoords.x << " " << vertices[i].texCoords.y << std::endl;
+			if ( abs(vertices[i].texCoords.x) > 1 )
+				std::cerr << C_RED << "Weird value vert.texCoord.x: " << vertices[i].texCoords.x << C_RST << std::endl;
+			if ( abs(vertices[i].texCoords.y) > 1 )
+				std::cerr << C_RED << "Weird value vert.texCoord.y: " << vertices[i].texCoords.y << C_RST << std::endl;
+		}
+		std::cout << std::endl;
+		for (size_t i = 0; i < indices.size(); i++) {
+			if ( indices[i] > 100000 )
+				std::cerr << C_RED << "Weird value indices: " << indices[i] << C_RST << std::endl;
+			std::cout << "f " << indices[i];
+			if ( i % 3 == 2 )
+				std::cout << std::endl;
+			else
+				std::cout << " ";
 		}
 	}
 
@@ -124,6 +157,23 @@ private:
 
 		glBindVertexArray(0);
 	}
+
+	// void	print() {
+	// 	for (size_t i = 0; i < vertices.size(); i++)
+	// 		std::cout << "v" << vertices[i].position.x << ", " << vertices[i].position.y << ", " << vertices[i].position.z << std::endl;
+	// 	std::cout << std::endl;
+	// 	for (size_t i = 0; i < vertices.size(); i++)
+	// 		std::cout << "vn" << vertices[i].normal.x << ", " << vertices[i].normal.y << ", " << vertices[i].normal.z << std::endl;
+	// 	std::cout << std::endl;
+	// 	for (size_t i = 0; i < vertices.size(); i++)
+	// 		std::cout << "vt" << vertices[i].texCoords.x << ", " << vertices[i].texCoords.y << std::endl;
+	// 	std::cout << std::endl;
+	// 	for (size_t i = 0; i < indices.size(); i++) {
+	// 		std::cout << "f" << indices[i] << std::endl;
+	// 		if ( i % 3 == 2 )
+	// 			std::cout << std::endl;
+	// 	}
+	// }
 };
 
 #endif
