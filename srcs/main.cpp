@@ -111,7 +111,7 @@ int main( int argc, char **argv )
 	if ( argc != 3 )
 		return 1;
 
-	std::cout << "START" << std::endl;
+	// std::cout << "START" << std::endl;
 	GLFWwindow*	window;
 	try {
 		window = setupLibs();
@@ -143,13 +143,13 @@ int main( int argc, char **argv )
 	// model.meshes[0].print();
 
 	// Render Loop
-	std::cout << "LOOP" << std::endl;
+	// std::cout << "LOOP" << std::endl;
 	shader.use();
 	while (!glfwWindowShouldClose(window))
 		render( window, shader, model );
 	
 	// Terminate
-	std::cout << "TERMINATE" << std::endl;
+	// std::cout << "TERMINATE" << std::endl;
 	glfwTerminate();
 
 	return 0;

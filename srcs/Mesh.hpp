@@ -49,7 +49,7 @@ public:
 		this->indices = indices;
 		this->textures = textures;
 
-		// print();
+		print();
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
@@ -60,6 +60,8 @@ public:
 		glDeleteBuffers(1, &VBO);
 	}
 	void	Draw(Shader &shader) {
+		// print();
+			// std::cerr << name << " drawn" <<std::endl;
 		// (void)shader;
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
@@ -157,23 +159,6 @@ private:
 
 		glBindVertexArray(0);
 	}
-
-	// void	print() {
-	// 	for (size_t i = 0; i < vertices.size(); i++)
-	// 		std::cout << "v" << vertices[i].position.x << ", " << vertices[i].position.y << ", " << vertices[i].position.z << std::endl;
-	// 	std::cout << std::endl;
-	// 	for (size_t i = 0; i < vertices.size(); i++)
-	// 		std::cout << "vn" << vertices[i].normal.x << ", " << vertices[i].normal.y << ", " << vertices[i].normal.z << std::endl;
-	// 	std::cout << std::endl;
-	// 	for (size_t i = 0; i < vertices.size(); i++)
-	// 		std::cout << "vt" << vertices[i].texCoords.x << ", " << vertices[i].texCoords.y << std::endl;
-	// 	std::cout << std::endl;
-	// 	for (size_t i = 0; i < indices.size(); i++) {
-	// 		std::cout << "f" << indices[i] << std::endl;
-	// 		if ( i % 3 == 2 )
-	// 			std::cout << std::endl;
-	// 	}
-	// }
 };
 
 #endif

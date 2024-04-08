@@ -10,6 +10,7 @@
 
 #include "Shader.hpp"
 #include "Mesh.hpp"
+#include "Objimp.hpp"
 
 Mesh		box();
 
@@ -18,15 +19,19 @@ class Model
 {
 public:
 	std::vector<Mesh>	meshes;
+	Objimp*				obj;
 	Model( char *path ) {
-		loadModel( path );
+		obj = new Objimp( path );
 	}
-	~Model() {}
+	~Model() {
+		delete(obj);
+	}
 	void	Draw( Shader &shader ) {
-		// std::cout << meshes.size() << std::endl;
-		for (uint i = 0; i < meshes.size(); i++)
-			meshes[i].Draw(shader);
-		// meshes[70].Draw(shader);
+		for (uint i = 0; i < obj->meshes.size(); i++) {
+			// std::cerr << "draw[" << i << "]" <<std::endl;
+			obj->meshes[i]->Draw(shader);
+		}
+			// obj->meshes[0].Draw(shader);
 	}
 
 private:
