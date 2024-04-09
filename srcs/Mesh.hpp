@@ -49,7 +49,7 @@ public:
 		this->indices = indices;
 		this->textures = textures;
 
-		print();
+		// print();
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
@@ -97,7 +97,8 @@ public:
 			if ( abs(vertices[i].position.y) > 20 )
 				std::cerr << C_RED << "Weird value vert.pos.y: " << vertices[i].position.y << C_RST << std::endl;
 			if ( abs(vertices[i].position.z) > 20 )
-				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << std::endl;
+				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << " & x is " << vertices[i].position.x << std::endl;
+				// std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << std::endl;
 			std::cout << "v " << vertices[i].position.x << " " << vertices[i].position.y << " " << vertices[i].position.z << std::endl;
 		}
 		std::cout << std::endl;

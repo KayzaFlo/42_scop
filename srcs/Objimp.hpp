@@ -4,35 +4,14 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-// #include <scopm.hpp>
 #include <sys/stat.h>
-// #include <stb_image.h>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-// #include "Shader.hpp"
 #include "Mesh.hpp"
 #include "betterLog.h"
-
-
-// struct s_Vector3 {
-// 	float x;
-// 	float y;
-// };
-
-// struct s_Vector3 {
-// 	float x;
-// 	float y;
-// 	float z;
-// };
-
-// struct Texture {
-// 	uint32_t	id;
-// 	std::string	type;
-// 	std::string	path;
-// };
 
 struct Material {
 	std::string				name;
@@ -70,10 +49,8 @@ public:
 		loadModel( path );
 		// print();
 		for( size_t i = 0; i < objects.size(); i++ ) {
-		// for( size_t i = 0; i < 4; i++ ) {
 			meshes.push_back( createMesh(objects[i]) );
 		}
-		// 	std::cerr << "got it" << std::endl;
 	}
 	~Objimp() {}
 
@@ -90,13 +67,7 @@ private:
 		buffer << file.rdbuf();
 
 		s_Object	currentObject;
-		int 		vCount = 0;
-		int 		nCount = 0;
-		int 		tCount = 0;
-		int 		vMax = 0;
-		int 		nMax = 0;
-		int 		tMax = 0;
-		bool		smoothShading = false;
+		bool		smoothShading = false; // doesnt handle >1
 
 		std::string line;
 		while (std::getline(buffer, line, '\n')) {
@@ -104,13 +75,15 @@ private:
 			line_buf << line;
 			std::string token;
 			std::getline(line_buf, token, ' ');
-			// if (!tmp)
-				// continue;
-			// token = tmp;
-			if ( token == "#" || token[0] == 13 || token[0] == 0 )
+			if ( token == "#" || token[0] <= 32 || token[0] == 127 )
 				continue;
 			else if ( token == "mtllib" ) {
 				// parse .mtl & create Material
+				std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
+				continue;
+			}
+			else if ( token == "g" ) {
+				std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
 				continue;
 			}
 			else if ( token == "o" ) {
@@ -122,16 +95,17 @@ private:
 				currentObject.name = token;
 				continue;
 			}
-			else if ( token == "v" ) {
-				s_Vector3 vertex;
-				std::getline(line_buf, token, ' ');
-				vertex.x = atof(token.c_str());
-				std::getline(line_buf, token, ' ');
-				vertex.y = atof(token.c_str());
-				std::getline(line_buf, token, ' ');
-				vertex.z = atof(token.c_str());
-				vertices.push_back(vertex);
-				vCount++;
+			else if ( token == "v" ) { // doesnt handle v v/vn/vt
+				float	val[3];
+
+				for (size_t i = 0; i < 3; i++)
+				{
+					std::getline(line_buf, token, ' ');
+					while (is_empty(token.c_str()))
+						std::getline(line_buf, token, ' ');
+					val[i] = atof(token.c_str());
+				}
+				vertices.push_back(s_Vector3{ val[0], val[1], val[2] });
 			}
 			else if ( token == "vn" ) {
 				s_Vector3 vertex;
@@ -142,7 +116,6 @@ private:
 				std::getline(line_buf, token, ' ');
 				vertex.z = atof(token.c_str());
 				normals.push_back(vertex);
-				nCount++;
 			}
 			else if ( token == "vt" ) {
 				s_Vector2 vertex;
@@ -151,12 +124,11 @@ private:
 				std::getline(line_buf, token, ' ');
 				vertex.y = atof(token.c_str());
 				texCoords.push_back(vertex);
-				tCount++;
 			}
 			else if ( token == "usemtl" ) {
+				std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
 				std::getline(line_buf, token, ' ');
 				currentObject.matName = token;
-				// std::cerr << C_YEL << "\'" << line.c_str() << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
 				continue;
 			}
 			else if ( token == "s" ) {
@@ -166,44 +138,38 @@ private:
 				else if ( token == "off" )
 					smoothShading = false;
 				else
-					std::cerr << C_YEL << "\'" << line.c_str() << "\' bad parameter" << C_RST << std::endl;
+					std::cerr << C_YEL << "\'s " << token[0] << "\' bad parameter" << C_RST << std::endl;
 				continue;
 			}
-			else if ( token == "f" ) {
+			else if ( token == "f" ) { // doesnt handle negative/relative values
 				s_Face	face;
 				face.s = smoothShading;
 				while ( std::getline(line_buf, token, ' ') ) {
+					if (is_empty(token.c_str()))
+						continue;
 					std::stringstream	token_buf;
 					token_buf << token;
 					std::string sub_token;
+					if ( !std::getline(token_buf, sub_token, '/') ) {
+						// face.iPosition.push_back(std::stoi(sub_token.c_str()) - 1);
+						continue;
+					}
+					face.iPosition.push_back(std::stoi(sub_token) - 1);
 					if ( !std::getline(token_buf, sub_token, '/') )
-						break;
-			if ( std::stoi(sub_token.c_str()) - 1 > vMax ) vMax = std::stoi(sub_token.c_str()) - 1;
-					face.iPosition.push_back(std::stoi(sub_token.c_str()) - 1);
+						continue;
+					face.iTexCoord.push_back(std::stoi(sub_token) - 1);
 					if ( !std::getline(token_buf, sub_token, '/') )
-						break;
-			if ( std::stoi(sub_token.c_str()) - 1 > tMax ) tMax = std::stoi(sub_token.c_str()) - 1;
-					face.iTexCoord.push_back(std::stoi(sub_token.c_str()) - 1);
-					if ( !std::getline(token_buf, sub_token, '/') )
-						break;
-			if ( std::stoi(sub_token.c_str()) - 1 > nMax ) nMax = std::stoi(sub_token.c_str()) - 1;
-					face.iNormal.push_back(std::stoi(sub_token.c_str()) - 1);
+						continue;
+					face.iNormal.push_back(std::stoi(sub_token) - 1);
 				}
 				currentObject.faces.push_back(face);
 			}
 			else {
-				std::cerr << C_RED << "\'" << line.c_str() << "\' is not a valid .mtl line" << C_RST << std::endl;
-				exit(1);
+				std::cerr << C_RED << "\'" << token[0] << "\' is not a valid .obj parameter" << C_RST << std::endl;
+				// exit(1);
 			}
 		}
 		objects.push_back(currentObject);
-
-			std::cerr << "vCount: " << vCount << std::endl;
-			std::cerr << "nCount: " << nCount << std::endl;
-			std::cerr << "tCount: " << tCount << std::endl;
-			std::cerr << "vMax: " << vMax << std::endl;
-			std::cerr << "nMax: " << nMax << std::endl;
-			std::cerr << "tMax: " << tMax << std::endl;
 	}
 
 	void print() {
@@ -214,7 +180,7 @@ private:
 			if ( abs(vertices[i].y) > 20 )
 				std::cerr << C_RED << "Weird value vert.pos.y: " << vertices[i].y << C_RST << std::endl;
 			if ( abs(vertices[i].z) > 20 )
-				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].z << C_RST << std::endl;
+				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].z << C_RST << " & x is " << vertices[i].x << std::endl;
 			std::cout << "v " << vertices[i].x << " " << vertices[i].y << " " << vertices[i].z << std::endl;
 		}
 		std::cout << std::endl;
@@ -266,34 +232,34 @@ private:
 		uint					indiceCount = 0;
 
 		std::vector<s_Face>		f = obj.faces;
-			// std::cerr << "fsize: " << f.size() << std::endl;
 		for (size_t i = 0; i < f.size(); i++) {
-			// std::cerr << "i(" << i << ") ";
 			for (size_t n = 0; n < f[i].iPosition.size() - 2; n++) {
-				// (0, 1+n, 2+n)
-				uint i1 = f[i].iPosition[0];
-				uint i2 = f[i].iPosition[1 + n];
-				uint i3 = f[i].iPosition[2 + n];
-				uint in1 = f[i].iNormal[0];
-				uint in2 = f[i].iNormal[1 + n];
-				uint in3 = f[i].iNormal[2 + n];
-				uint it1 = f[i].iTexCoord[0];
-				uint it2 = f[i].iTexCoord[1 + n];
-				uint it3 = f[i].iTexCoord[2 + n];
-				Vertex v1 = { vertices[i1], normals[in1], texCoords[it1] };
-				o_vert.push_back( v1 );
-				Vertex v2 = { vertices[i2], normals[in2], texCoords[it2] };
-				o_vert.push_back( v2 );
-				Vertex v3 = { vertices[i3], normals[in3], texCoords[it3] };
-				o_vert.push_back( v3 );
+
+				s_Vector3 p1 = vertices[f[i].iPosition[0]];
+				s_Vector3 p2 = vertices[f[i].iPosition[1 + n]];
+				s_Vector3 p3 = vertices[f[i].iPosition[2 + n]];
+
+				s_Vector3 n1 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[0] ? normals[f[i].iNormal[0]] : crossProduct( p1, p2, p3 );
+				s_Vector3 n2 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[1+n] ? normals[f[i].iNormal[1+n]] : crossProduct( p2, p3, p1 );
+				s_Vector3 n3 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[2+n] ? normals[f[i].iNormal[2+n]] : crossProduct( p3, p1, p2 );
+
+				s_Vector2 t1 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[0] ? texCoords[f[i].iTexCoord[0]] : (s_Vector2){ 0.0f, 0.0f };
+				s_Vector2 t2 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[1+n] ? texCoords[f[i].iTexCoord[1 + n]] : (s_Vector2){ 0.0f, 0.0f };
+				s_Vector2 t3 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[2+n] ? texCoords[f[i].iTexCoord[2 + n]] : (s_Vector2){ 0.0f, 0.0f };
+
+				o_vert.insert( o_vert.end(), { 
+					{ p1, n1, t1 },
+					{ p2, n2, t2 },
+					{ p3, n3, t3 }
+				} );
 				indiceCount += 3;
 			}
 		}
-			// std::cerr << "loop end" << std::endl;
-		Texture t = { 0, "a", "b" };
+
+		Texture t = { 0, "a", "b" }; // WIP
 		o_tex.push_back( t );
 		
-			// std::cerr << "ret" << std::endl;
+			std::cerr << "mesh Created" << std::endl;
 
 		for (size_t i = 0; i < indiceCount; i++) {
 			o_ind.push_back(i);
@@ -302,6 +268,29 @@ private:
 
 		return new Mesh( obj.name, o_vert, o_ind, o_tex );
 	}
+
+	s_Vector3	crossProduct( s_Vector3 o, s_Vector3 a, s_Vector3 b ) {
+		s_Vector3 lhs = { a.x - o.x, a.y - o.y, a.z - o.z };
+		s_Vector3 rhs = { b.x - o.x, b.y - o.y, b.z - o.z };
+
+		s_Vector3 ret = {
+			lhs.y * rhs.z - lhs.z * rhs.y,
+			lhs.z * rhs.x - lhs.x * rhs.z,
+			lhs.x * rhs.y - lhs.y * rhs.x
+		};
+		float mag = 1 / sqrt( ret.x*ret.x + ret.y*ret.y + ret.z*ret.z );
+		return s_Vector3{ ret.x * mag, ret.y * mag, ret.z * mag };
+	}
+
+	int is_empty(const char *s) {
+		while (*s != '\0') {
+			if (!isspace((unsigned char)*s))
+			return 0;
+			s++;
+		}
+		return 1;
+	}
+
 };
 
 
