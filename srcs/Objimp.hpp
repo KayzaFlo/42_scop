@@ -11,12 +11,13 @@
 #include <iostream>
 
 #include "Mesh.hpp"
+#include "Mtlimp.hpp"
 #include "betterLog.h"
 
-struct Material {
-	std::string				name;
-	std::vector<Texture*>	textures;
-};
+// struct Material {
+// 	std::string				name;
+// 	std::vector<Texture*>	textures;
+// };
 
 struct s_Face
 {
@@ -30,8 +31,8 @@ struct s_Object
 {
 	std::string				name;
 	std::vector<s_Face>		faces;
-	std::string				matName;
-	std::vector<Material*>	materials;
+	// std::string				matName;
+	Material				mat;
 };
 
 
@@ -44,8 +45,13 @@ public:
 	std::vector<s_Vector2>	texCoords;
 	std::vector<s_Object>	objects;
 	std::vector<Mesh*>		meshes;
+	std::vector<Material>	materials;
 	
-	Objimp( char const *path ) {
+	Objimp( std::string path ) {
+
+		directory = path.substr( 0, path.find_last_of( "/", path.size() ) + 1 );
+		std::cerr << directory << std::endl;
+
 		loadModel( path );
 		// print();
 		for( size_t i = 0; i < objects.size(); i++ ) {
@@ -78,8 +84,14 @@ private:
 			if ( token == "#" || token[0] <= 32 || token[0] == 127 )
 				continue;
 			else if ( token == "mtllib" ) {
+				// std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
 				// parse .mtl & create Material
-				std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
+				std::getline(line_buf, token, ' ');
+				while (is_empty(token.c_str()))
+					std::getline(line_buf, token, ' ');
+				Mtlimp	mtlimp( std::string( directory + token ) );
+				materials = mtlimp.materials;
+	std::cerr << materials.size() << std::endl;
 				continue;
 			}
 			else if ( token == "g" ) {
@@ -126,9 +138,15 @@ private:
 				texCoords.push_back(vertex);
 			}
 			else if ( token == "usemtl" ) {
-				std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
+				// std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
+
 				std::getline(line_buf, token, ' ');
-				currentObject.matName = token;
+				while (is_empty(token.c_str()))
+					std::getline(line_buf, token, ' ');
+				for (size_t i = 0; i < materials.size(); i++) {
+					if ( token == materials[i].name )
+						currentObject.mat = materials[i];
+				}
 				continue;
 			}
 			else if ( token == "s" ) {
@@ -228,12 +246,26 @@ private:
 	Mesh *	createMesh( s_Object & obj ) {
 		std::vector<Vertex>		o_vert;
 		std::vector<uint32_t>	o_ind;
-		std::vector<Texture>	o_tex;
 		uint					indiceCount = 0;
 
 		std::vector<s_Face>		f = obj.faces;
 		for (size_t i = 0; i < f.size(); i++) {
 			for (size_t n = 0; n < f[i].iPosition.size() - 2; n++) {
+
+				// std::cerr << f[i].iPosition[0] << std::endl;
+				// std::cerr << f[i].iPosition[1+n] << std::endl;
+				// std::cerr << f[i].iPosition[2+n] << std::endl;
+				if (
+					f[i].iPosition[0] < 0 ||
+					f[i].iPosition[0] > vertices.size() ||
+					f[i].iPosition[1+n] < 0 ||
+					f[i].iPosition[1+n] > vertices.size() ||
+					f[i].iPosition[2+n] < 0 ||
+					f[i].iPosition[2+n] > vertices.size()
+				) {
+					std::cerr << "Face Index wrong" << std::endl;
+					exit(1);
+				}
 
 				s_Vector3 p1 = vertices[f[i].iPosition[0]];
 				s_Vector3 p2 = vertices[f[i].iPosition[1 + n]];
@@ -255,18 +287,14 @@ private:
 				indiceCount += 3;
 			}
 		}
-
-		Texture t = { 0, "a", "b" }; // WIP
-		o_tex.push_back( t );
 		
-			std::cerr << "mesh Created" << std::endl;
+			// std::cerr << "mesh Created" << std::endl;
 
 		for (size_t i = 0; i < indiceCount; i++) {
 			o_ind.push_back(i);
 		}
 		
-
-		return new Mesh( obj.name, o_vert, o_ind, o_tex );
+		return new Mesh( obj.name, o_vert, o_ind, obj.mat );
 	}
 
 	s_Vector3	crossProduct( s_Vector3 o, s_Vector3 a, s_Vector3 b ) {
@@ -290,7 +318,6 @@ private:
 		}
 		return 1;
 	}
-
 };
 
 

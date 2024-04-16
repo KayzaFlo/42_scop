@@ -31,6 +31,8 @@ struct Vertex {
 	s_Vector2	texCoords;
 };
 
+#include "Mtlimp.hpp"
+
 class Mesh
 {
 public:
@@ -38,28 +40,35 @@ public:
 	std::vector<Vertex>		vertices;				// v // vn // vt
 	// ???											// s
 	std::vector<uint32_t>	indices;				// f?
-	std::vector<Texture>		textures;				// tex
-	// Material				_mat;					// usemtl, mtllib
+	std::vector<Texture>	textures;				// tex
+	Material				mat;					// usemtl, mtllib
 	uint	VAO;
 
-	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {
+	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material & mat) {
 		// std::cout << "Mesh's constructor called (" << name << ")" << std::endl;
 		this->name = name;
 		this->vertices = vertices;
 		this->indices = indices;
-		this->textures = textures;
+		this->mat = mat;
+		this->textures = mat.textureMaps;
+		(void)mat;
+			// std::cerr << mat.name << std::endl;
 
 		// print();
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
 	}
+	Mesh( Mesh const & src ) {
+		(void)src;
+		std::cerr << "mesh copy constructor\n";
+	}
 	~Mesh() {
 		// std::cout << "Mesh's destructor called (" << this->name << ")" << std::endl;
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 	}
-	void	Draw(Shader &shader) {
+	void	Draw(Shader *shader) {
 		// print();
 			// std::cerr << name << " drawn" <<std::endl;
 		// (void)shader;
@@ -76,8 +85,9 @@ public:
 			else if(name == "texture_specular")
 				number = std::to_string(specularNr++);
 
-			// shader.setUniform(("material." + name + number).c_str(), (int)i);
-			(void)shader;
+			// shader->setUniform( (name + number).c_str(), (int)i );
+            glUniform1i(glGetUniformLocation(shader->ID, (name + number).c_str()), i);
+			// (void)shader;
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
 		// draw mesh
@@ -86,7 +96,6 @@ public:
 		glBindVertexArray(0);
 		// reset to default, good practice
 		glActiveTexture(GL_TEXTURE0);
-		// std::cerr << "draw" << std::endl;
 	}
 
 	void print() {
@@ -97,8 +106,7 @@ public:
 			if ( abs(vertices[i].position.y) > 20 )
 				std::cerr << C_RED << "Weird value vert.pos.y: " << vertices[i].position.y << C_RST << std::endl;
 			if ( abs(vertices[i].position.z) > 20 )
-				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << " & x is " << vertices[i].position.x << std::endl;
-				// std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << std::endl;
+				std::cerr << C_RED << "Weird value vert.pos.z: " << vertices[i].position.z << C_RST << std::endl;
 			std::cout << "v " << vertices[i].position.x << " " << vertices[i].position.y << " " << vertices[i].position.z << std::endl;
 		}
 		std::cout << std::endl;

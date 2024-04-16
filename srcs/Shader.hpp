@@ -17,6 +17,10 @@ public:
 	uint32_t	ID;
 
 	Shader( const char* vertexPath, const char* fragmentPath );
+	Shader( Shader const & src ) {
+		(void)src;
+		std::cerr << "shader copy constructor\n";
+	}
 	~Shader();
 
 	void use();

@@ -16,24 +16,8 @@ void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void		mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void		scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-Mesh		box();
-
-Vector3 cubePositions[] = {
-    Vector3( 0.0f,  0.0f,  0.0f),
-    Vector3( 2.0f,  5.0f, -15.0f),
-    Vector3(-1.5f, -2.2f, -2.5f),
-    Vector3(-3.8f, -2.0f, -12.3f),
-    Vector3( 2.4f, -0.4f, -3.5f),
-    Vector3(-1.7f,  3.0f, -7.5f),
-    Vector3( 1.3f, -2.0f, -2.5f),
-    Vector3( 1.5f,  2.0f, -2.5f),
-    Vector3( 1.5f,  0.2f, -1.5f),
-    Vector3(-1.3f,  1.0f, -1.5f) 
-};
 
 Camera	camera(Vector3(0.0f, 1.8f, 6.0f));
-
-// current step : https://learnopengl.com/Getting-started/Hello-Triangle
 
 GLFWwindow*	setupLibs() {
 	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
@@ -57,8 +41,7 @@ GLFWwindow*	setupLibs() {
 	return window;
 }
 
-void	render( GLFWwindow *window, Shader shader, Model &mesh ) {
-	// (void)texture;
+void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -71,36 +54,18 @@ void	render( GLFWwindow *window, Shader shader, Model &mesh ) {
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 
+	
+	Matrix4x4	view = camera.GetViewMatrix();
+	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
+	shader->setUniform("view", view);
+	shader->setUniform("projection", projection);
+	shader->setUniform("viewPos", camera.position.x, camera.position.y, camera.position.z);
+
 	Matrix4x4	model = Matrix4x4::identity;
 	model = Matrix4x4::Rotate(model, 0, Vector3(1,0,0));
 	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
-	
-	// shader.use(); // If const : not necessary to call every frame
-
-	Matrix4x4	view = camera.GetViewMatrix();
-	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
-	shader.setUniform("model", model);
-	shader.setUniform("view", view);
-	shader.setUniform("projection", projection);
-	// std::cout << "model:\n" << model << "view:\n" << view << "projection:\n" << projection;
-
-	// for(unsigned int i = 0; i < 10; i++)
-	// {
-	// 	model = Matrix4x4::Translate(Matrix4x4::identity, cubePositions[i]);
-	// 	float angle = 20.0f * i;
-	// 	if ( i % 3 == 0 )
-	// 		model = Matrix4x4::Rotate(model, angle * (M_PI/180) + (float)glfwGetTime() / 5, Vector3(1.0f, 0.3f, 0.5f));
-	// 	else
-	// 		model = Matrix4x4::Rotate(model, angle * (M_PI/180), Vector3(1.0f, 0.3f, 0.5f));
-	// 	shader.setUniform("model", model);
-
-	// 	mesh.Draw(shader);
-	// }
-	
-		mesh.Draw(shader);
-	
-	// glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // use EBO
-	// // glDrawArrays(GL_TRIANGLES, 0, 36); // without EBO / faces
+	obj->transform = model;
+	obj->Draw();
 
 	glfwSwapBuffers(window);	// Render this iteration buffer
 	glfwPollEvents();	// Check if any events are triggered andd call correspind functions / callbacks
@@ -121,7 +86,7 @@ int main( int argc, char **argv )
 	}
 	std::string	vsPath = "srcs/shaders/" + std::string(argv[2]) + ".vs";
 	std::string	fsPath = "srcs/shaders/" + std::string(argv[2]) + ".fs";
-	Shader		shader( vsPath.c_str(), fsPath.c_str() );
+	Shader *	shader = new Shader( vsPath.c_str(), fsPath.c_str() );
 	
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -131,26 +96,23 @@ int main( int argc, char **argv )
 	glfwSetScrollCallback(window, scroll_callback);
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    stbi_set_flip_vertically_on_load(true);
+    // stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Mesh	boxMesh = box();
-	Model	model(argv[1]);
-
-	// boxMesh.print();
-	// model.meshes[0].print();
+	// Load Model
+	Model *	model =  new Model(argv[1], shader);
 
 	// Render Loop
-	// std::cout << "LOOP" << std::endl;
-	shader.use();
 	while (!glfwWindowShouldClose(window))
 		render( window, shader, model );
 	
 	// Terminate
-	// std::cout << "TERMINATE" << std::endl;
 	glfwTerminate();
+
+	delete(shader);
+	delete(model);
 
 	return 0;
 }
