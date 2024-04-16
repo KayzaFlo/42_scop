@@ -15,25 +15,20 @@
 #include "Mesh.hpp"
 #include "betterLog.h"
 
-struct Material {
-	std::string				name;			// newmtl
-	s_Vector3				ambient;		// Ka
-	s_Vector3				diffuse;		// Kd
-	s_Vector3				specular;		// Ks
-	float					specularExp;	// Ns
-	float					dissolved;		// d
-	// float					transparency;	// Tr (inverted: Tr = 1 - d) // d or Tr depend of implementation
-	// s_Vector3				transmissionFilterColor;	// Tf
-	float					opticalDensity;	// Ni
-	uint					illum;			// i ( different illumination models, id from 0 to 10, illum 2 seems basics ) 
-	std::vector<Texture>	textureMaps;	// map_Ka, map_Kd, map_Ks, map_Ns, map_d, map_bump/bump, disp, decal
-
-	// Material&	operator=(Material& m) {
-	// 	std::cerr << "assignement called\n";
-	// 	return m;
-	// }
-};
-
+// struct Material {
+// 	std::string				name;			// newmtl
+// 	s_Vector3				ambient;		// Ka
+// 	s_Vector3				diffuse;		// Kd
+// 	s_Vector3				emissive;		// Ke
+// 	s_Vector3				specular;		// Ks
+// 	float					specularExp;	// Ns
+// 	float					dissolved;		// d
+// 	// float					transparency;	// Tr (inverted: Tr = 1 - d) // d or Tr depend of implementation
+// 	// s_Vector3				transmissionFilterColor;	// Tf
+// 	float					opticalDensity;	// Ni
+// 	uint					illum;			// i ( different illumination models, id from 0 to 10, illum 2 seems basics ) 
+// 	std::vector<Texture>	textureMaps;	// map_Ka, map_Kd, map_Ks, map_Ns, map_d, map_bump/bump, disp, decal
+// };
 
 class Mtlimp
 {
@@ -66,7 +61,7 @@ private:
 			line_buf << line;
 			std::string token;
 			std::getline(line_buf, token, ' ');
-			if ( token == "#" || token[0] <= 32 || token[0] == 127 )
+			if ( token[0] == '#' || token[0] <= 32 || token[0] == 127 )
 				continue;
 			else if ( token == "newmtl" ) {
 				if ( currentMat.name != "" ) {
@@ -99,6 +94,17 @@ private:
 				}
 				currentMat.diffuse = s_Vector3{ val[0], val[1], val[2] };
 			}
+			else if ( token == "Ke" ) {
+				float	val[3];
+				for (size_t i = 0; i < 3; i++)
+				{
+					std::getline(line_buf, token, ' ');
+					while (is_empty(token.c_str()))
+						std::getline(line_buf, token, ' ');
+					val[i] = atof(token.c_str());
+				}
+				currentMat.emissive = s_Vector3{ val[0], val[1], val[2] };
+			}
 			else if ( token == "Ks" ) {
 				float	val[3];
 				for (size_t i = 0; i < 3; i++)
@@ -128,7 +134,7 @@ private:
 					std::getline(line_buf, token, ' ');
 				currentMat.dissolved = atof(token.c_str());
 			}
-			else if ( token == "i" ) {
+			else if ( token == "illum" ) {
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
@@ -152,8 +158,17 @@ private:
 				setupTex( &texId, directory + token);
 				currentMat.textureMaps.push_back(Texture{ texId, "texture_specular", directory + token });
 			}
+			else if ( token == "map_Bump" ) {
+				std::getline(line_buf, token, ' ');
+				while (is_empty(token.c_str()))
+					std::getline(line_buf, token, ' ');
+				std::string	fileName = token;
+				uint	texId;
+				setupTex( &texId, directory + token);
+				currentMat.textureMaps.push_back(Texture{ texId, "texture_bump", directory + token });
+			}
 			else {
-				std::cerr << C_RED << "\'" << token[0] << "\' is not a valid .obj parameter" << C_RST << std::endl;
+				std::cerr << C_RED << "\'" << token << "\' is not a valid .obj parameter" << C_RST << std::endl;
 				// exit(1);
 			}
 		}
@@ -176,7 +191,6 @@ private:
 		// uint32_t	texture;
 		glGenTextures(1, texture);
 		glBindTexture(GL_TEXTURE_2D, *texture);
-		std::cerr << *texture << std::endl;
 
 		// tx wraping / filtering options (on the currently bound texture object)
 		// float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };

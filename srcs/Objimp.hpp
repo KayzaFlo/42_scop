@@ -19,21 +19,21 @@
 // 	std::vector<Texture*>	textures;
 // };
 
-struct s_Face
-{
-	std::vector<uint>	iPosition;
-	std::vector<uint>	iNormal;
-	std::vector<uint>	iTexCoord;
-	bool				s;
-};
+// struct s_Face
+// {
+// 	std::vector<uint>	iPosition;
+// 	std::vector<uint>	iNormal;
+// 	std::vector<uint>	iTexCoord;
+// 	int					s;
+// };
 
-struct s_Object
-{
-	std::string				name;
-	std::vector<s_Face>		faces;
-	// std::string				matName;
-	Material				mat;
-};
+// struct s_Object
+// {
+// 	std::string				name;
+// 	std::vector<s_Face>		faces;
+// 	// std::string				matName;
+// 	Material				mat;
+// };
 
 
 
@@ -48,12 +48,10 @@ public:
 	std::vector<Material>	materials;
 	
 	Objimp( std::string path ) {
-
 		directory = path.substr( 0, path.find_last_of( "/", path.size() ) + 1 );
-		std::cerr << directory << std::endl;
 
 		loadModel( path );
-		// print();
+
 		for( size_t i = 0; i < objects.size(); i++ ) {
 			meshes.push_back( createMesh(objects[i]) );
 		}
@@ -73,7 +71,7 @@ private:
 		buffer << file.rdbuf();
 
 		s_Object	currentObject;
-		bool		smoothShading = false; // doesnt handle >1
+		bool		smoothShading = -1;
 
 		std::string line;
 		while (std::getline(buffer, line, '\n')) {
@@ -81,17 +79,15 @@ private:
 			line_buf << line;
 			std::string token;
 			std::getline(line_buf, token, ' ');
-			if ( token == "#" || token[0] <= 32 || token[0] == 127 )
+			if ( token[0] == '#' || token[0] <= 32 || token[0] == 127 )
 				continue;
 			else if ( token == "mtllib" ) {
-				// std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
 				// parse .mtl & create Material
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
 				Mtlimp	mtlimp( std::string( directory + token ) );
 				materials = mtlimp.materials;
-	std::cerr << materials.size() << std::endl;
 				continue;
 			}
 			else if ( token == "g" ) {
@@ -138,8 +134,6 @@ private:
 				texCoords.push_back(vertex);
 			}
 			else if ( token == "usemtl" ) {
-				// std::cerr << C_YEL << "\'" << token << "\' is not implemented yet and has been ignored" << C_RST << std::endl;
-
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
@@ -151,12 +145,10 @@ private:
 			}
 			else if ( token == "s" ) {
 				std::getline(line_buf, token, ' ');
-				if ( token == "1" )
-					smoothShading = true;
-				else if ( token == "off" )
-					smoothShading = false;
+				if ( token == "off" )
+					smoothShading = -1;
 				else
-					std::cerr << C_YEL << "\'s " << token[0] << "\' bad parameter" << C_RST << std::endl;
+					smoothShading = atoi(token.c_str());
 				continue;
 			}
 			else if ( token == "f" ) { // doesnt handle negative/relative values
@@ -251,10 +243,6 @@ private:
 		std::vector<s_Face>		f = obj.faces;
 		for (size_t i = 0; i < f.size(); i++) {
 			for (size_t n = 0; n < f[i].iPosition.size() - 2; n++) {
-
-				// std::cerr << f[i].iPosition[0] << std::endl;
-				// std::cerr << f[i].iPosition[1+n] << std::endl;
-				// std::cerr << f[i].iPosition[2+n] << std::endl;
 				if (
 					f[i].iPosition[0] < 0 ||
 					f[i].iPosition[0] > vertices.size() ||
@@ -288,8 +276,6 @@ private:
 			}
 		}
 		
-			// std::cerr << "mesh Created" << std::endl;
-
 		for (size_t i = 0; i < indiceCount; i++) {
 			o_ind.push_back(i);
 		}

@@ -7,31 +7,32 @@
 #include <scopm.hpp>
 
 #include "Shader.hpp"
+#include "scop.h"
 
-struct s_Vector2 {
-	float x;
-	float y;
-};
+// struct s_Vector2 {
+// 	float x;
+// 	float y;
+// };
 
-struct s_Vector3 {
-	float x;
-	float y;
-	float z;
-};
+// struct s_Vector3 {
+// 	float x;
+// 	float y;
+// 	float z;
+// };
 
-struct Texture {
-	uint32_t	id;
-	std::string	type;
-	std::string	path;
-};
+// struct Texture {
+// 	uint32_t	id;
+// 	std::string	type;
+// 	std::string	path;
+// };
 
-struct Vertex {
-	s_Vector3	position;
-	s_Vector3	normal;
-	s_Vector2	texCoords;
-};
-
-#include "Mtlimp.hpp"
+// struct Vertex {
+// 	s_Vector3	position;
+// 	s_Vector3	normal;
+// 	s_Vector2	texCoords;
+// };
+	
+// #include "Mtlimp.hpp"
 
 class Mesh
 {
@@ -49,12 +50,8 @@ public:
 		this->name = name;
 		this->vertices = vertices;
 		this->indices = indices;
-		this->mat = mat;
+		// this->mat = mat;
 		this->textures = mat.textureMaps;
-		(void)mat;
-			// std::cerr << mat.name << std::endl;
-
-		// print();
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
@@ -69,11 +66,9 @@ public:
 		glDeleteBuffers(1, &VBO);
 	}
 	void	Draw(Shader *shader) {
-		// print();
-			// std::cerr << name << " drawn" <<std::endl;
-		// (void)shader;
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
+		unsigned int bumpNbr = 1;
 		for(unsigned int i = 0; i < textures.size(); i++)
 		{
 			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
@@ -84,6 +79,8 @@ public:
 				number = std::to_string(diffuseNr++);
 			else if(name == "texture_specular")
 				number = std::to_string(specularNr++);
+			else if(name == "texture_bump")
+				number = std::to_string(bumpNbr++);
 
 			// shader->setUniform( (name + number).c_str(), (int)i );
             glUniform1i(glGetUniformLocation(shader->ID, (name + number).c_str()), i);

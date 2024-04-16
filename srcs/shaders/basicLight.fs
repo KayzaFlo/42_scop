@@ -16,8 +16,8 @@ void main()
 
 
 	vec3 ourColor =vec3(0.6353, 0.8314, 0.8627);
-	vec3 ambient = vec3(0.2392, 0.2353, 0.2235);
-	vec3 lightPos = vec3(5., 5., 5.);
+	vec3 ambient = vec3(0.1216, 0.1216, 0.1176);
+	vec3 lightPos = vec3(5., 5., 0.);
 	vec3 lightColor = vec3(1., 1., 1.);
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);  

@@ -20,7 +20,6 @@ OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 GLFW = 		lib/glfw
 GLAD = 		lib/glad
-ASSIMP = 	lib/assimp
 
 CCHEADERS = -I$(GLFW)/include/ \
 			-I$(GLAD)/include/ \
@@ -28,7 +27,7 @@ CCHEADERS = -I$(GLFW)/include/ \
 			-Ilib/stb/include/ \
 			-Isrcs/scopm/include/ \
 
-CCLIBS =	-L$(GLFW)/lib-universal $(ASSIMP)/lib/libassimp.5.3.0.dylib -lglfw3 \
+CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
 
 CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -std=c++11
 

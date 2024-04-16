@@ -7,10 +7,10 @@
 #include "Shader.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
-// #include "ModelAssimp.hpp"
 
-#define SCR_WIDTH 1920
-#define SCR_HEIGHT 1080
+s_Vector2	horizontalAxis = {};
+s_Vector2	verticalAxis = {};
+s_Vector2	zAxis = {};
 
 void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -42,6 +42,9 @@ GLFWwindow*	setupLibs() {
 }
 
 void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
+
+	camera.Move(horizontalAxis, verticalAxis, zAxis, 1.0f/60.0f);
+
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -73,6 +76,10 @@ void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
 
 int main( int argc, char **argv )
 {
+	// horizontalAxis = {};
+	// verticalAxis = {};
+	// zAxis = {};
+
 	if ( argc != 3 )
 		return 1;
 

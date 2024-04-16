@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <scopm.hpp>
+#include "scop.h"
 
 enum Camera_Movement {
     FORWARD,
@@ -75,6 +76,15 @@ public:
             position = position + up * velocity;
         if (direction == DOWN)
             position = position - up * velocity;
+    }
+	
+	void Move( s_Vector2 h, s_Vector2 v, s_Vector2 z, float deltaTime )
+    {
+        float velocity = movementSpeed * deltaTime;
+
+		position = position + front * (v.x - v.y) * velocity;
+		position = position + right * (h.y - h.x) * velocity;
+		position = position + worldUp * (z.x - z.y) * velocity;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
