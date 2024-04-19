@@ -14,11 +14,11 @@ struct s_Vector2 {
 	float y;
 };
 
-struct s_Vector3 {
-	float x;
-	float y;
-	float z;
-};
+// struct Vector3 {
+// 	float x;
+// 	float y;
+// 	float z;
+// };
 
 #include "Camera.hpp"
 extern Camera	camera;
@@ -30,8 +30,8 @@ struct Texture {
 };
 
 struct Vertex {
-	s_Vector3	position;
-	s_Vector3	normal;
+	Vector3	position;
+	Vector3	normal;
 	s_Vector2	texCoords;
 };
 
@@ -49,14 +49,14 @@ struct s_Face
 
 struct Material {
 	std::string				name;			// newmtl
-	s_Vector3				ambient;		// Ka
-	s_Vector3				diffuse;		// Kd
-	s_Vector3				emissive;		// Ke
-	s_Vector3				specular;		// Ks
+	Vector3				ambient;		// Ka
+	Vector3				diffuse;		// Kd
+	Vector3				emissive;		// Ke
+	Vector3				specular;		// Ks
 	float					specularExp;	// Ns
 	float					dissolved;		// d
 	// float					transparency;	// Tr (inverted: Tr = 1 - d) // d or Tr depend of implementation
-	// s_Vector3				transmissionFilterColor;	// Tf
+	// Vector3				transmissionFilterColor;	// Tf
 	float					opticalDensity;	// Ni
 	uint					illum;			// i ( different illumination models, id from 0 to 10, illum 2 seems basics ) 
 	std::vector<Texture>	textureMaps;	// map_Ka, map_Kd, map_Ks, map_Ns, map_d, map_bump/bump, disp, decal

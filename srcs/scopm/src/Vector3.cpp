@@ -6,35 +6,17 @@ const	Vector3 Vector3::one = Vector3( 1, 1, 1 );
 
 // Constructors
 
-Vector3::Vector3() :
-	_raw((float*) std::calloc( 3, sizeof(float) )),
-	x(_raw[0]),
-	y(_raw[1]),
-	z(_raw[2]) {}
-Vector3::Vector3( float _x, float _y, float _z ) :
-	_raw((float*) std::calloc( 3, sizeof(float) )),
-	x(_raw[0]),
-	y(_raw[1]),
-	z(_raw[2]) {
-	_raw[0] = _x;
-	_raw[1] = _y;
-	_raw[2] = _z;
-}
-Vector3::Vector3( Vector3 const & src ) :
-	_raw((float*) std::calloc( 3, sizeof(float) )),
-	x(_raw[0]),
-	y(_raw[1]),
-	z(_raw[2]) {
-	*this = src;
-}
-Vector3::~Vector3() {
-	std::free(_raw);
-}
+Vector3::Vector3() : x(0), y(0), z(0) {}
+Vector3::Vector3( float _x, float _y, float _z ) : x(_x), y(_y), z(_z) {}
+Vector3::Vector3( Vector3 const & src ) { *this = src; }
+Vector3::~Vector3() {}
 
 // Operators
 
 Vector3 &	Vector3::operator=( Vector3 const & rhs ) {
-	std::memcpy( this->_raw, rhs._raw, sizeof(float) * 3 );
+	x = rhs.x;
+	y = rhs.y;
+	z = rhs.z;
 	return *this;
 }
 
@@ -49,7 +31,7 @@ Vector3		Vector3::operator-( Vector3 const & rhs ) const {
 Vector3		Vector3::operator*( float const & rhs ) const {
 	return Vector3( x * rhs, y * rhs, z * rhs );
 }
-float		Vector3::operator[]( int i ) const { return _raw[i]; }
+float		Vector3::operator[]( int i ) const { return array[i]; }
 
 // Methods
 

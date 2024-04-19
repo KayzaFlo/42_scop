@@ -6,14 +6,13 @@
 
 namespace scopm
 {
-	class Vector3 {
-	private:
-		float	*_raw;
-
-	public:
-		float &	x;
-		float &	y;
-		float &	z;
+	union Vector3 {
+		struct {
+			float	x;
+			float	y;
+			float	z;
+		};
+		float	array[3];
 
 		Vector3();
 		Vector3( float _x, float _y, float _z );

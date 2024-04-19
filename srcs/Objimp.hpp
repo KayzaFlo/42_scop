@@ -40,8 +40,8 @@
 class Objimp
 {
 public:
-	std::vector<s_Vector3>	vertices;
-	std::vector<s_Vector3>	normals;
+	std::vector<Vector3>	vertices;
+	std::vector<Vector3>	normals;
 	std::vector<s_Vector2>	texCoords;
 	std::vector<s_Object>	objects;
 	std::vector<Mesh*>		meshes;
@@ -113,10 +113,10 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				vertices.push_back(s_Vector3{ val[0], val[1], val[2] });
+				vertices.push_back(Vector3(val[0], val[1], val[2]));
 			}
 			else if ( token == "vn" ) {
-				s_Vector3 vertex;
+				Vector3 vertex;
 				std::getline(line_buf, token, ' ');
 				vertex.x = atof(token.c_str());
 				std::getline(line_buf, token, ' ');
@@ -255,13 +255,13 @@ private:
 					exit(1);
 				}
 
-				s_Vector3 p1 = vertices[f[i].iPosition[0]];
-				s_Vector3 p2 = vertices[f[i].iPosition[1 + n]];
-				s_Vector3 p3 = vertices[f[i].iPosition[2 + n]];
+				Vector3 p1 = vertices[f[i].iPosition[0]];
+				Vector3 p2 = vertices[f[i].iPosition[1 + n]];
+				Vector3 p3 = vertices[f[i].iPosition[2 + n]];
 
-				s_Vector3 n1 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[0] ? normals[f[i].iNormal[0]] : crossProduct( p1, p2, p3 );
-				s_Vector3 n2 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[1+n] ? normals[f[i].iNormal[1+n]] : crossProduct( p2, p3, p1 );
-				s_Vector3 n3 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[2+n] ? normals[f[i].iNormal[2+n]] : crossProduct( p3, p1, p2 );
+				Vector3 n1 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[0] ? normals[f[i].iNormal[0]] : crossProduct( p1, p2, p3 );
+				Vector3 n2 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[1+n] ? normals[f[i].iNormal[1+n]] : crossProduct( p2, p3, p1 );
+				Vector3 n3 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[2+n] ? normals[f[i].iNormal[2+n]] : crossProduct( p3, p1, p2 );
 
 				s_Vector2 t1 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[0] ? texCoords[f[i].iTexCoord[0]] : (s_Vector2){ 0.0f, 0.0f };
 				s_Vector2 t2 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[1+n] ? texCoords[f[i].iTexCoord[1 + n]] : (s_Vector2){ 0.0f, 0.0f };
@@ -283,17 +283,17 @@ private:
 		return new Mesh( obj.name, o_vert, o_ind, obj.mat );
 	}
 
-	s_Vector3	crossProduct( s_Vector3 o, s_Vector3 a, s_Vector3 b ) {
-		s_Vector3 lhs = { a.x - o.x, a.y - o.y, a.z - o.z };
-		s_Vector3 rhs = { b.x - o.x, b.y - o.y, b.z - o.z };
+	Vector3	crossProduct( Vector3 o, Vector3 a, Vector3 b ) {
+		Vector3 lhs = { a.x - o.x, a.y - o.y, a.z - o.z };
+		Vector3 rhs = { b.x - o.x, b.y - o.y, b.z - o.z };
 
-		s_Vector3 ret = {
+		Vector3 ret = {
 			lhs.y * rhs.z - lhs.z * rhs.y,
 			lhs.z * rhs.x - lhs.x * rhs.z,
 			lhs.x * rhs.y - lhs.y * rhs.x
 		};
 		float mag = 1 / sqrt( ret.x*ret.x + ret.y*ret.y + ret.z*ret.z );
-		return s_Vector3{ ret.x * mag, ret.y * mag, ret.z * mag };
+		return Vector3{ ret.x * mag, ret.y * mag, ret.z * mag };
 	}
 
 	int is_empty(const char *s) {

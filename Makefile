@@ -6,7 +6,7 @@ all: $(NAME)
 
 $(NAME) : $(OBJ)
 	@ echo "$(GREEN)Compilation ${WHITE}of ${CYAN}$(NAME) ${WHITE}..."
-	@ $(CC) $(CCLIBS) $(OBJ) $(CCFRAMEWORKS) -o $(NAME)
+	@ $(CC) $(LIB_GLFW) $(OBJ) $(CCFRAMEWORKS) -o $(NAME)
 	@ echo "$(CYAN)$(NAME) $(GREEN)created$(WHITE) ✔️"
 
 $(OBJDIR)/%.o: %.cpp

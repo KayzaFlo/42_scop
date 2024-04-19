@@ -81,7 +81,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.ambient = s_Vector3{ val[0], val[1], val[2] };
+				currentMat.ambient = Vector3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Kd" ) {
 				float	val[3];
@@ -92,7 +92,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.diffuse = s_Vector3{ val[0], val[1], val[2] };
+				currentMat.diffuse = Vector3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ke" ) {
 				float	val[3];
@@ -103,7 +103,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.emissive = s_Vector3{ val[0], val[1], val[2] };
+				currentMat.emissive = Vector3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ks" ) {
 				float	val[3];
@@ -114,7 +114,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.specular = s_Vector3{ val[0], val[1], val[2] };
+				currentMat.specular = Vector3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ns" ) {
 				std::getline(line_buf, token, ' ');

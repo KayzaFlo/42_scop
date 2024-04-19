@@ -4,12 +4,14 @@
 #include <iostream>
 #include <cmath>
 #include "Vector3.hpp"
+#include "Vec4.hpp"
 
 namespace scopm
 {
-	class Matrix4x4 {
-	private:
-		float	*_raw;
+	union Matrix4x4 {
+		Vec4	vectors[4];
+		float	array[16];
+		float	d_arr[4][4];
 		// Warning
 		// our data is :		while glm is:	so needed to transpose when passing as uniform
 		// 0, 1, 2, 3,			0, 4, 8, c,
@@ -17,21 +19,22 @@ namespace scopm
 		// 8, 9, a, b,			2, 6, a, e,
 		// c, d, e, f			3, 7, b, f
 
-	public:
 		Matrix4x4();
-		Matrix4x4( float * __raw );
+		Matrix4x4( float a );
+		Matrix4x4( float arr[16] );
 		Matrix4x4( Matrix4x4 const & src );
 		~Matrix4x4();
 
-		Matrix4x4 &	operator=( Matrix4x4 const & rhs );
+		Matrix4x4 &		operator=( Matrix4x4 const & rhs );
 		Matrix4x4		operator+( Matrix4x4 const & rhs ) const;
 		Matrix4x4		operator-( Matrix4x4 const & rhs ) const;
 		Matrix4x4		operator*( float const & rhs ) const;
 		Matrix4x4		operator*( Matrix4x4 const & rhs ) const;
-		float			operator[]( int i ) const;
+		Vec4			operator[]( int i ) const;
+		Vec4			operator[]( int i );
 
 
-		float *	getRaw() const;
+		// float *	getRaw() const;
 
 		static Matrix4x4	Translate( Matrix4x4 transformationMatrix, Vector3 translation );
 		static Matrix4x4	Rotate( Matrix4x4 transformationMatrix, float angleInRad, Vector3 normalizedVecAxis );

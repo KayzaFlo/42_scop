@@ -17,8 +17,8 @@ class Model
 {
 public:
 	Matrix4x4	transform = Matrix4x4::identity;
-	s_Vector3	position = {};
-	s_Vector3	rotation = {};
+	Vector3	position = Vector3::zero;
+	Vector3	rotation = Vector3::zero;
 
 	Model( char *path, Shader *s ) : shader(s) {
 		Objimp *OBJ_file = new Objimp( path );

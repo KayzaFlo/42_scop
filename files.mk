@@ -13,12 +13,14 @@ SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \
 			$(SOURCEDIR)events.cpp \
 			$(SOURCEDIR)scopm/src/Vector3.cpp \
+			$(SOURCEDIR)scopm/src/Vec4.cpp \
 			$(SOURCEDIR)scopm/src/Matrix4x4.cpp \
 			lib/glad/src/glad.cpp \
 			lib/stb/src/stb_image.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 GLFW = 		lib/glfw
+LIB_GLFW =	$(GLFW)/lib-universal/libglfw3.a
 GLAD = 		lib/glad
 
 CCHEADERS = -I$(GLFW)/include/ \
@@ -26,8 +28,6 @@ CCHEADERS = -I$(GLFW)/include/ \
 			-I$(ASSIMP)/include/ \
 			-Ilib/stb/include/ \
 			-Isrcs/scopm/include/ \
-
-CCLIBS =	-L$(GLFW)/lib-universal -lglfw3 \
 
 CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -std=c++11
 

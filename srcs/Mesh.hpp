@@ -9,31 +9,6 @@
 #include "Shader.hpp"
 #include "scop.h"
 
-// struct s_Vector2 {
-// 	float x;
-// 	float y;
-// };
-
-// struct s_Vector3 {
-// 	float x;
-// 	float y;
-// 	float z;
-// };
-
-// struct Texture {
-// 	uint32_t	id;
-// 	std::string	type;
-// 	std::string	path;
-// };
-
-// struct Vertex {
-// 	s_Vector3	position;
-// 	s_Vector3	normal;
-// 	s_Vector2	texCoords;
-// };
-	
-// #include "Mtlimp.hpp"
-
 class Mesh
 {
 public:
