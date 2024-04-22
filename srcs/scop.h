@@ -8,18 +8,6 @@
 #include <cmath>
 #include <vector>
 
-
-struct s_Vector2 {
-	float x;
-	float y;
-};
-
-// struct Vector3 {
-// 	float x;
-// 	float y;
-// 	float z;
-// };
-
 #include "Camera.hpp"
 extern Camera	camera;
 
@@ -30,14 +18,17 @@ struct Texture {
 };
 
 struct Vertex {
-	Vector3	position;
-	Vector3	normal;
-	s_Vector2	texCoords;
+	Vec3	position;
+	Vec3	normal;
+	Vec2	texCoords;
+	Vec3	color;
 };
 
-extern s_Vector2	horizontalAxis;
-extern s_Vector2	verticalAxis;
-extern s_Vector2	zAxis;
+extern Vec2	horizontalAxis;
+extern Vec2	verticalAxis;
+extern Vec2	zAxis;
+
+extern int	currentShaderId;
 
 struct s_Face
 {
@@ -49,10 +40,10 @@ struct s_Face
 
 struct Material {
 	std::string				name;			// newmtl
-	Vector3				ambient;		// Ka
-	Vector3				diffuse;		// Kd
-	Vector3				emissive;		// Ke
-	Vector3				specular;		// Ks
+	Vec3				ambient;		// Ka
+	Vec3				diffuse;		// Kd
+	Vec3				emissive;		// Ke
+	Vec3				specular;		// Ks
 	float					specularExp;	// Ns
 	float					dissolved;		// d
 	// float					transparency;	// Tr (inverted: Tr = 1 - d) // d or Tr depend of implementation
@@ -69,5 +60,11 @@ struct s_Object
 	// std::string				matName;
 	Material				mat;
 };
+
+
+void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void		mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void		scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 #endif

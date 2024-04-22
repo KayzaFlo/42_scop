@@ -31,7 +31,7 @@ public:
 	void	setUniform( const std::string &name, float x, float y ) const;
 	void	setUniform( const std::string &name, float x, float y, float z ) const;
 	void	setUniform( const std::string &name, float x, float y, float z, float w ) const;
-	void	setUniform( const std::string &name, Matrix4x4 mat ) const;
+	void	setUniform( const std::string &name, Mat4 mat ) const;
 
 	void	checkCompileErrors(unsigned int shader, std::string type);
 };

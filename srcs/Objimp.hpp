@@ -40,9 +40,9 @@
 class Objimp
 {
 public:
-	std::vector<Vector3>	vertices;
-	std::vector<Vector3>	normals;
-	std::vector<s_Vector2>	texCoords;
+	std::vector<Vec3>	vertices;
+	std::vector<Vec3>	normals;
+	std::vector<Vec2>	texCoords;
 	std::vector<s_Object>	objects;
 	std::vector<Mesh*>		meshes;
 	std::vector<Material>	materials;
@@ -113,10 +113,10 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				vertices.push_back(Vector3(val[0], val[1], val[2]));
+				vertices.push_back(Vec3(val[0], val[1], val[2]));
 			}
 			else if ( token == "vn" ) {
-				Vector3 vertex;
+				Vec3 vertex;
 				std::getline(line_buf, token, ' ');
 				vertex.x = atof(token.c_str());
 				std::getline(line_buf, token, ' ');
@@ -126,7 +126,7 @@ private:
 				normals.push_back(vertex);
 			}
 			else if ( token == "vt" ) {
-				s_Vector2 vertex;
+				Vec2 vertex;
 				std::getline(line_buf, token, ' ');
 				vertex.x = atof(token.c_str());
 				std::getline(line_buf, token, ' ');
@@ -239,6 +239,7 @@ private:
 		std::vector<Vertex>		o_vert;
 		std::vector<uint32_t>	o_ind;
 		uint					indiceCount = 0;
+		srand((unsigned)time(NULL));
 
 		std::vector<s_Face>		f = obj.faces;
 		for (size_t i = 0; i < f.size(); i++) {
@@ -255,22 +256,27 @@ private:
 					exit(1);
 				}
 
-				Vector3 p1 = vertices[f[i].iPosition[0]];
-				Vector3 p2 = vertices[f[i].iPosition[1 + n]];
-				Vector3 p3 = vertices[f[i].iPosition[2 + n]];
+				Vec3 p1 = vertices[f[i].iPosition[0]];
+				Vec3 p2 = vertices[f[i].iPosition[1 + n]];
+				Vec3 p3 = vertices[f[i].iPosition[2 + n]];
 
-				Vector3 n1 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[0] ? normals[f[i].iNormal[0]] : crossProduct( p1, p2, p3 );
-				Vector3 n2 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[1+n] ? normals[f[i].iNormal[1+n]] : crossProduct( p2, p3, p1 );
-				Vector3 n3 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[2+n] ? normals[f[i].iNormal[2+n]] : crossProduct( p3, p1, p2 );
+				Vec3 n1 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[0] ? normals[f[i].iNormal[0]] : crossProduct( p1, p2, p3 );
+				Vec3 n2 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[1+n] ? normals[f[i].iNormal[1+n]] : crossProduct( p2, p3, p1 );
+				Vec3 n3 = f[i].iNormal.size() > 0 && normals.size() > f[i].iNormal[2+n] ? normals[f[i].iNormal[2+n]] : crossProduct( p3, p1, p2 );
 
-				s_Vector2 t1 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[0] ? texCoords[f[i].iTexCoord[0]] : (s_Vector2){ 0.0f, 0.0f };
-				s_Vector2 t2 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[1+n] ? texCoords[f[i].iTexCoord[1 + n]] : (s_Vector2){ 0.0f, 0.0f };
-				s_Vector2 t3 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[2+n] ? texCoords[f[i].iTexCoord[2 + n]] : (s_Vector2){ 0.0f, 0.0f };
+				Vec2 t1 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[0] ? texCoords[f[i].iTexCoord[0]] : (Vec2){ p1.x + p1.z, p1.y };
+				Vec2 t2 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[1+n] ? texCoords[f[i].iTexCoord[1 + n]] : (Vec2){ p2.x + p2.z, p2.y };
+				Vec2 t3 = f[i].iTexCoord.size() > 0 && texCoords.size() > f[i].iTexCoord[2+n] ? texCoords[f[i].iTexCoord[2 + n]] : (Vec2){ p3.x + p3.z, p3.y };
+
+				float r = rand() % 255 / 255.0f;
+				float g = rand() % 255 / 255.0f;
+				float b = rand() % 255 / 255.0f;
+				Vec3 col = { r, g, b };
 
 				o_vert.insert( o_vert.end(), { 
-					{ p1, n1, t1 },
-					{ p2, n2, t2 },
-					{ p3, n3, t3 }
+					{ p1, n1, t1, col },
+					{ p2, n2, t2, col },
+					{ p3, n3, t3, col }
 				} );
 				indiceCount += 3;
 			}
@@ -283,17 +289,17 @@ private:
 		return new Mesh( obj.name, o_vert, o_ind, obj.mat );
 	}
 
-	Vector3	crossProduct( Vector3 o, Vector3 a, Vector3 b ) {
-		Vector3 lhs = { a.x - o.x, a.y - o.y, a.z - o.z };
-		Vector3 rhs = { b.x - o.x, b.y - o.y, b.z - o.z };
+	Vec3	crossProduct( Vec3 o, Vec3 a, Vec3 b ) {
+		Vec3 lhs = { a.x - o.x, a.y - o.y, a.z - o.z };
+		Vec3 rhs = { b.x - o.x, b.y - o.y, b.z - o.z };
 
-		Vector3 ret = {
+		Vec3 ret = {
 			lhs.y * rhs.z - lhs.z * rhs.y,
 			lhs.z * rhs.x - lhs.x * rhs.z,
 			lhs.x * rhs.y - lhs.y * rhs.x
 		};
 		float mag = 1 / sqrt( ret.x*ret.x + ret.y*ret.y + ret.z*ret.z );
-		return Vector3{ ret.x * mag, ret.y * mag, ret.z * mag };
+		return Vec3{ ret.x * mag, ret.y * mag, ret.z * mag };
 	}
 
 	int is_empty(const char *s) {

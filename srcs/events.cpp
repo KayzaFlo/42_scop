@@ -8,9 +8,9 @@
 float	lastX, lastY;
 bool	firstMouse = true;
 
-// s_Vector2	horizontalAxis;
-// s_Vector2	verticalAxis;
-// s_Vector2	zAxis;
+// Vec2	horizontalAxis;
+// Vec2	verticalAxis;
+// Vec2	zAxis;
 
 void	framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	(void)window;
@@ -32,19 +32,9 @@ void keypressed_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )	// Quit with Escape key
 		glfwSetWindowShouldClose(window, true);
 
-    // if ( glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( FORWARD, 1.0f/60.0f );
-    // if ( glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( BACKWARD, 1.0f/60.0f );
-    // if ( glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( LEFT, 1.0f/60.0f );
-    // if ( glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( RIGHT, 1.0f/60.0f );
-    // if ( glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( UP, 1.0f/60.0f );
-    // if ( glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS )
-	// 	camera.ProcessKeyboard( DOWN, 1.0f/60.0f );
-
+	if( key == GLFW_KEY_F && action == GLFW_PRESS )	// Quit with Escape key
+		currentShaderId++;
+		
     if ( glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS )
 		verticalAxis.x = 1;
     if ( glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS )

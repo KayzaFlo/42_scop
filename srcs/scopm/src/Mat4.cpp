@@ -1,56 +1,56 @@
-#include "Matrix4x4.hpp"
+#include "Mat4.hpp"
 using namespace scopm;
 
 
-const Matrix4x4	Matrix4x4::zero = {};
-const Matrix4x4	Matrix4x4::identity = Matrix4x4(1);
+const Mat4	Mat4::zero = {};
+const Mat4	Mat4::identity = Mat4(1);
 
 //////////////////////////
 //-----CONSTRUCTORS-----//
 //////////////////////////
 
-Matrix4x4::Matrix4x4() : array() {}
-Matrix4x4::Matrix4x4( float a ) : array() {
+Mat4::Mat4() : array() {}
+Mat4::Mat4( float a ) : array() {
 	for (int i = 0; i < 4; i++)
 		d_arr[i][i] = a;
 }
-Matrix4x4::Matrix4x4( float a[16] ) : array() {
+Mat4::Mat4( float a[16] ) : array() {
 	for (int i = 0; i < 16; i++)
 		array[i] = a[i];
 }
-Matrix4x4::Matrix4x4( Matrix4x4 const & src ) { *this = src; }
-Matrix4x4::~Matrix4x4() {}
+Mat4::Mat4( Mat4 const & src ) { *this = src; }
+Mat4::~Mat4() {}
 
 
 ///////////////////////
 //-----OPERATORS-----//
 ///////////////////////
 
-Matrix4x4 &		Matrix4x4::operator=( Matrix4x4 const & rhs ) {
+Mat4 &		Mat4::operator=( Mat4 const & rhs ) {
 	for (int i = 0; i < 16; i++)
 		array[i] = rhs.array[i];
 	return *this;
 }
-Matrix4x4		Matrix4x4::operator+( Matrix4x4 const & rhs ) const {
-	Matrix4x4 ret = {};
+Mat4		Mat4::operator+( Mat4 const & rhs ) const {
+	Mat4 ret = {};
 	for (int i = 0; i < 16; i++)
 		ret.array[i] = array[i] + rhs.array[i];
 	return ret;
 }
-Matrix4x4		Matrix4x4::operator-( Matrix4x4 const & rhs ) const {
-	Matrix4x4 ret = {};
+Mat4		Mat4::operator-( Mat4 const & rhs ) const {
+	Mat4 ret = {};
 	for (int i = 0; i < 16; i++)
 		ret.array[i] = array[i] - rhs.array[i];
 	return ret;
 }
-Matrix4x4		Matrix4x4::operator*( float const & rhs ) const {
-	Matrix4x4 ret = {};
+Mat4		Mat4::operator*( float const & rhs ) const {
+	Mat4 ret = {};
 	for (int i = 0; i < 16; i++)
 		ret.array[i] = array[i] * rhs;
 	return ret;
 }
-Matrix4x4		Matrix4x4::operator*( Matrix4x4 const & rhs ) const {
-	Matrix4x4 ret = {};
+Mat4		Mat4::operator*( Mat4 const & rhs ) const {
+	Mat4 ret = {};
 	for (int i = 0; i < 16; i++) {
 		for (int c = 0; c < 4; c++) {
 			int a = std::floor( i / 4 ) * 4 + c;
@@ -60,8 +60,8 @@ Matrix4x4		Matrix4x4::operator*( Matrix4x4 const & rhs ) const {
 	}
 	return ret;
 }
-Vec4			Matrix4x4::operator[]( int i ) const { return vectors[i]; }
-Vec4			Matrix4x4::operator[]( int i ) { return vectors[i]; }
+Vec4			Mat4::operator[]( int i ) const { return vectors[i]; }
+Vec4			Mat4::operator[]( int i ) { return vectors[i]; }
 
 
 /////////////////////
@@ -83,16 +83,16 @@ Vec4			Matrix4x4::operator[]( int i ) { return vectors[i]; }
 //-----STATICS METHODS-----//
 /////////////////////////////
 
-Matrix4x4	Matrix4x4::Translate( Matrix4x4 transformationMatrix, Vector3 translation ) {
+Mat4	Mat4::Translate( Mat4 transformationMatrix, Vec3 translation ) {
 	float transRaw[16] = {
 		1, 0, 0, translation.x,
 		0, 1, 0, translation.y,
 		0, 0, 1, translation.z,
 		0, 0, 0, 1 };
-	return Matrix4x4( transRaw ) * transformationMatrix;
+	return Mat4( transRaw ) * transformationMatrix;
 }
 // Local Rotate
-Matrix4x4	Matrix4x4::Rotate( Matrix4x4 transformationMatrix, float angleInRad, Vector3 normalizedVecAxis ) {
+Mat4	Mat4::Rotate( Mat4 transformationMatrix, float angleInRad, Vec3 normalizedVecAxis ) {
 	normalizedVecAxis = normalizedVecAxis.normalized();
 	float	t = angleInRad;
 	float	u = normalizedVecAxis.x;
@@ -126,20 +126,20 @@ Matrix4x4	Matrix4x4::Rotate( Matrix4x4 transformationMatrix, float angleInRad, V
 		d, e, f, y,
 		g, h, i, z,
 		0, 0, 0, 1 };
-	return Matrix4x4( rotRaw ) * transformationMatrix;
+	return Mat4( rotRaw ) * transformationMatrix;
 	// from https://sites.google.com/site/glennmurray/glenn-murray-ph-d/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions
 }
 // Scale Local
-Matrix4x4	Matrix4x4::Scale( Matrix4x4 transformationMatrix, Vector3 scale ) {
+Mat4	Mat4::Scale( Mat4 transformationMatrix, Vec3 scale ) {
 	// homemade, a garder un oeil la-dessus
 	float	scaleRaw[] = {
 		scale.x, 0, 0, transformationMatrix.array[3] * ( 1 - scale.x ),
 		0, scale.y, 0, transformationMatrix.array[7] * ( 1 - scale.y ),
 		0, 0, scale.z, transformationMatrix.array[11] * ( 1 - scale.z ),
 		0, 0, 0, 1 };
-	return Matrix4x4( scaleRaw ) * transformationMatrix;
+	return Mat4( scaleRaw ) * transformationMatrix;
 }
-Matrix4x4	Matrix4x4::Perspective( float fovy, float aspect, float zNear, float zFar ){
+Mat4	Mat4::Perspective( float fovy, float aspect, float zNear, float zFar ){
 
 	float rad = fovy;
 	float tanHalfFovy = tan(rad / 2);
@@ -154,24 +154,24 @@ Matrix4x4	Matrix4x4::Perspective( float fovy, float aspect, float zNear, float z
 		0, b, 0, 0,
 		0, 0, c, d,
 		0, 0, e, 0 };
-	return Matrix4x4( persRaw );
+	return Mat4( persRaw );
 }
-Matrix4x4	Matrix4x4::LookAt( Vector3 eye, Vector3 center, Vector3 up ){
-	Vector3 const f( (center - eye).normalized() );
-	Vector3 const s( Vector3::Cross(f, up).normalized() );
-	Vector3 const u( Vector3::Cross(s, f) );
+Mat4	Mat4::LookAt( Vec3 eye, Vec3 center, Vec3 up ){
+	Vec3 const f( (center - eye).normalized() );
+	Vec3 const s( Vec3::Cross(f, up).normalized() );
+	Vec3 const u( Vec3::Cross(s, f) );
 
 	float	lookAtRaw[] = {
-		 s.x,	 s.y,	 s.z,	-Vector3::Dot(s, eye),
-		 u.x,	 u.y,	 u.z,	-Vector3::Dot(u, eye),
-		-f.x,	-f.y,	-f.z,	 Vector3::Dot(f, eye),
+		 s.x,	 s.y,	 s.z,	-Vec3::Dot(s, eye),
+		 u.x,	 u.y,	 u.z,	-Vec3::Dot(u, eye),
+		-f.x,	-f.y,	-f.z,	 Vec3::Dot(f, eye),
 		 0,		 0,		 0,		 1 };
-	return Matrix4x4( lookAtRaw );
+	return Mat4( lookAtRaw );
 
 }
 
 
-std::ostream &	operator<<( std::ostream & o, Matrix4x4 const & rhs ) {
+std::ostream &	operator<<( std::ostream & o, Mat4 const & rhs ) {
 	for (int i = 0; i < 4; i++) {
 		o << "[ ";
 		for (int j = 0; j < 4; j++) {

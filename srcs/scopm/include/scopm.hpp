@@ -1,9 +1,10 @@
 #ifndef SCOPM_HPP__
 #define SCOPM_HPP__
 
-#include "../src/Vector3.hpp"
+#include "../src/Vec2.hpp"
+#include "../src/Vec3.hpp"
 #include "../src/Vec4.hpp"
-#include "../src/Matrix4x4.hpp"
+#include "../src/Mat4.hpp"
 
 using namespace scopm;
 

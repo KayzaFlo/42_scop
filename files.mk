@@ -9,27 +9,32 @@ HEADERDIR = includes/
 
 MAIN_FILE = $(SOURCEDIR)main.cpp
 
+GLFW = 		lib/glfw/
+GLAD = 		lib/glad/
+STB = 		lib/stb/
+SCOPM = 	$(SOURCEDIR)scopm/
+
+LIB_GLFW =	$(GLFW)/lib-universal/libglfw3.a
+
 SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \
 			$(SOURCEDIR)events.cpp \
-			$(SOURCEDIR)scopm/src/Vector3.cpp \
-			$(SOURCEDIR)scopm/src/Vec4.cpp \
-			$(SOURCEDIR)scopm/src/Matrix4x4.cpp \
-			lib/glad/src/glad.cpp \
-			lib/stb/src/stb_image.cpp
+			$(SCOPM)src/Vec2.cpp \
+			$(SCOPM)src/Vec3.cpp \
+			$(SCOPM)src/Vec4.cpp \
+			$(SCOPM)src/Mat4.cpp \
+			$(GLAD)src/glad.cpp \
+			$(STB)src/stb_image.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
-GLFW = 		lib/glfw
-LIB_GLFW =	$(GLFW)/lib-universal/libglfw3.a
-GLAD = 		lib/glad
 
-CCHEADERS = -I$(GLFW)/include/ \
-			-I$(GLAD)/include/ \
-			-I$(ASSIMP)/include/ \
-			-Ilib/stb/include/ \
-			-Isrcs/scopm/include/ \
+CCHEADERS = -I$(GLFW)include/ \
+			-I$(GLAD)include/ \
+			-I$(ASSIMP)include/ \
+			-I$(STB)include/ \
+			-I$(SCOPM)include/ \
 
-CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -std=c++11
+CCFRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
 #####	COLORS		###################################################
 WHITE		:= \033[0m

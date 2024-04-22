@@ -81,7 +81,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.ambient = Vector3(val[0], val[1], val[2]);
+				currentMat.ambient = Vec3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Kd" ) {
 				float	val[3];
@@ -92,7 +92,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.diffuse = Vector3(val[0], val[1], val[2]);
+				currentMat.diffuse = Vec3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ke" ) {
 				float	val[3];
@@ -103,7 +103,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.emissive = Vector3(val[0], val[1], val[2]);
+				currentMat.emissive = Vec3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ks" ) {
 				float	val[3];
@@ -114,7 +114,7 @@ private:
 						std::getline(line_buf, token, ' ');
 					val[i] = atof(token.c_str());
 				}
-				currentMat.specular = Vector3(val[0], val[1], val[2]);
+				currentMat.specular = Vec3(val[0], val[1], val[2]);
 			}
 			else if ( token == "Ns" ) {
 				std::getline(line_buf, token, ' ');
@@ -195,8 +195,8 @@ private:
 		// tx wraping / filtering options (on the currently bound texture object)
 		// float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 		// glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // defaut is GL_REPEAT
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // defaut is GL_REPEAT
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// when texture minified	// mipmap onloy useful for min
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// when texture magnified
 

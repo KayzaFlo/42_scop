@@ -16,9 +16,9 @@
 class Model
 {
 public:
-	Matrix4x4	transform = Matrix4x4::identity;
-	Vector3	position = Vector3::zero;
-	Vector3	rotation = Vector3::zero;
+	Mat4	transform = Mat4::identity;
+	Vec3	position = Vec3::zero;
+	Vec3	rotation = Vec3::zero;
 
 	Model( char *path, Shader *s ) : shader(s) {
 		Objimp *OBJ_file = new Objimp( path );
@@ -45,6 +45,9 @@ public:
 			meshes[i]->Draw(shader);
 		}
 	}
+
+	Shader *	getShader() { return shader; }
+	void		setShader( Shader * s ) { shader = s; }
 
 private:
 	std::vector<Mesh*>	meshes;

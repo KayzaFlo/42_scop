@@ -26,11 +26,11 @@ class Camera
 {
 public:
 	// camera Attributes
-	Vector3	position;
-	Vector3	front;
-	Vector3	up;
-	Vector3	right;
-	Vector3	worldUp;
+	Vec3	position;
+	Vec3	front;
+	Vec3	up;
+	Vec3	right;
+	Vec3	worldUp;
 	// euler Angles
 	float yaw;
 	float pitch;
@@ -39,10 +39,10 @@ public:
 	float	mouseSensitivity;
 	float	zoom;
 
-	Vector3	inputAxis;
+	Vec3	inputAxis;
 
-	Camera(Vector3 _position = Vector3(0.0f, 0.0f, 0.0f), Vector3 _up = Vector3(0.0f, 1.0f, 0.0f), float _yaw = YAW, float _pitch = PITCH) :
-		front(Vector3(0.0f, 0.0f, -1.0f)),
+	Camera(Vec3 _position = Vec3(0.0f, 0.0f, 0.0f), Vec3 _up = Vec3(0.0f, 1.0f, 0.0f), float _yaw = YAW, float _pitch = PITCH) :
+		front(Vec3(0.0f, 0.0f, -1.0f)),
 		movementSpeed(SPEED),
 		mouseSensitivity(SENSITIVITY),
 		zoom(ZOOM)
@@ -56,8 +56,8 @@ public:
 	~Camera() {}
 
 	// returns the view matrix calculated using Euler Angles and the LookAt Matrix
-	Matrix4x4 GetViewMatrix() {
-		return Matrix4x4::LookAt(position, position + front, up);
+	Mat4 GetViewMatrix() {
+		return Mat4::LookAt(position, position + front, up);
 	}
 
 	// processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -78,7 +78,7 @@ public:
             position = position - up * velocity;
     }
 	
-	void Move( s_Vector2 h, s_Vector2 v, s_Vector2 z, float deltaTime )
+	void Move( Vec2 h, Vec2 v, Vec2 z, float deltaTime )
     {
         float velocity = movementSpeed * deltaTime;
 
@@ -124,14 +124,14 @@ private:
     void updateCameraVectors()
     {
         // calculate the new Front vector
-        Vector3 n_front;
+        Vec3 n_front;
         n_front.x = cos(radians(yaw)) * cos(radians(pitch));
         n_front.y = sin(radians(pitch));
         n_front.z = sin(radians(yaw)) * cos(radians(pitch));
         front = (n_front).normalized();
         // also re-calculate the Right and Up vector
-        right = (Vector3::Cross(front, worldUp)).normalized();  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        up    = (Vector3::Cross(right, front)).normalized();
+        right = (Vec3::Cross(front, worldUp)).normalized();  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        up    = (Vec3::Cross(right, front)).normalized();
     }
 
 };

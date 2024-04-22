@@ -3,21 +3,21 @@
 #include <scopm.hpp>
 
 #include <iostream>
+#include <map>
 
 #include "Shader.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
 
-s_Vector2	horizontalAxis = {};
-s_Vector2	verticalAxis = {};
-s_Vector2	zAxis = {};
+Vec2	horizontalAxis = {};
+Vec2	verticalAxis = {};
+Vec2	zAxis = {};
+int		currentShaderId = 0;
 
-void		framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void		keypressed_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void		mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void		scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+Camera	camera(Vec3(0.0f, 1.8f, 6.0f));
 
-Camera	camera(Vector3(0.0f, 1.8f, 6.0f));
+// std::map< std::string, Shader * >	shaders;
+std::vector<Shader *>		shaders;
 
 GLFWwindow*	setupLibs() {
 	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
@@ -41,7 +41,7 @@ GLFWwindow*	setupLibs() {
 	return window;
 }
 
-void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
+void	render( GLFWwindow *window, Model *obj ) {
 
 	camera.Move(horizontalAxis, verticalAxis, zAxis, 1.0f/60.0f);
 
@@ -57,16 +57,17 @@ void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 
+	// shader->use();
 	
-	Matrix4x4	view = camera.GetViewMatrix();
-	Matrix4x4	projection = Matrix4x4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
-	shader->setUniform("view", view);
-	shader->setUniform("projection", projection);
-	shader->setUniform("viewPos", camera.position.x, camera.position.y, camera.position.z);
+	Mat4	view = camera.GetViewMatrix();
+	Mat4	projection = Mat4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
+	obj->getShader()->setUniform("view", view);
+	obj->getShader()->setUniform("projection", projection);
+	obj->getShader()->setUniform("viewPos", camera.position.x, camera.position.y, camera.position.z);
 
-	Matrix4x4	model = Matrix4x4::identity;
-	model = Matrix4x4::Rotate(model, 0, Vector3(1,0,0));
-	model = Matrix4x4::Rotate(model, (float)glfwGetTime()/2, Vector3(0, 1, 0).normalized());
+	Mat4	model = Mat4::identity;
+	model = Mat4::Rotate(model, 0, Vec3(1,0,0));
+	model = Mat4::Rotate(model, (float)glfwGetTime()/2, Vec3(0, 1, 0).normalized());
 	obj->transform = model;
 	obj->Draw();
 
@@ -76,11 +77,7 @@ void	render( GLFWwindow *window, Shader *shader, Model *obj ) {
 
 int main( int argc, char **argv )
 {
-	// horizontalAxis = {};
-	// verticalAxis = {};
-	// zAxis = {};
-
-	if ( argc != 3 )
+	if ( argc != 2 )
 		return 1;
 
 	// std::cout << "START" << std::endl;
@@ -91,15 +88,20 @@ int main( int argc, char **argv )
 		std::cerr << e.what() << '\n';
 		return -1;
 	}
-	std::string	vsPath = "srcs/shaders/" + std::string(argv[2]) + ".vs";
-	std::string	fsPath = "srcs/shaders/" + std::string(argv[2]) + ".fs";
-	Shader *	shader = new Shader( vsPath.c_str(), fsPath.c_str() );
+	// std::string	vsPath = "srcs/shaders/" + std::string(argv[2]) + ".vs";
+	// std::string	fsPath = "srcs/shaders/" + std::string(argv[2]) + ".fs";
 	
+	// int	currentShader = 0;
+	shaders.push_back( new Shader( "srcs/shaders/basicLight.vs", "srcs/shaders/basicLight.fs" ) );
+	shaders.push_back( new Shader( "srcs/shaders/normal.vs", "srcs/shaders/normal.fs" ) );
+	shaders.push_back( new Shader( "srcs/shaders/mat.vs", "srcs/shaders/mat.fs" ) );
+	shaders.push_back( new Shader( "srcs/shaders/vertCol.vs", "srcs/shaders/vertCol.fs" ) );
+
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, keypressed_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  
 	glfwSetScrollCallback(window, scroll_callback);
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
@@ -109,16 +111,22 @@ int main( int argc, char **argv )
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Load Model
-	Model *	model =  new Model(argv[1], shader);
+	Model *	model =  new Model(argv[1], shaders[0]);
 
 	// Render Loop
-	while (!glfwWindowShouldClose(window))
-		render( window, shader, model );
+	while (!glfwWindowShouldClose(window)) {
+		model->setShader( shaders[currentShaderId % shaders.size() ] );
+		render( window, model );
+	}
 	
 	// Terminate
 	glfwTerminate();
 
-	delete(shader);
+	// shaders.clear();
+	delete(shaders[0]);
+	delete(shaders[1]);
+	delete(shaders[2]);
+	delete(shaders[3]);
 	delete(model);
 
 	return 0;
