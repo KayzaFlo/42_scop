@@ -2,26 +2,26 @@
 scop is a 42's specialization project that introduce us to OpenGL and 3D visualization.<br>
 
 <p align="center">
-  <img src="/screenshots/teapot.png" width="49%" />
+  <img src="/screenshots/teapot.gif" width="49%" />
   <img src="/screenshots/suzanne_normal.png" width="49%" />
 </p>
 <p align="center">
-  <img src="/screenshots/42.png" width="33%" />
-  <img src="/screenshots/suzanne_grid.png" width="33%" />
-  <img src="/screenshots/backpack.png" width="33%" />
+  <img src="/screenshots/42.png" width="32%" />
+  <img src="/screenshots/suzanne_grid.png" width="32%" />
+  <img src="/screenshots/backpack.png" width="32%" />
 </p>
 
 ## Description
 
 Scop is a .obj/.mtl file visualizer in [C++](https://cplusplus.com/doc/tutorial/) and [OpenGL](https://www.opengl.org/) with a few option to change shaders and move in the scene.<br>
 I also use:<br>
-	- [GLAD](https://github.com/Dav1dde/glad) to load Opengl methods
-	- [GLFW](https://www.glfw.org/) to manage the windows and input
-	- [STB](https://github.com/nothings/stb) to load texture images
+	- [GLAD](https://github.com/Dav1dde/glad) to load Opengl methods<br>
+	- [GLFW](https://www.glfw.org/) to manage the windows and input<br>
+	- [STB](https://github.com/nothings/stb) to load texture images<br>
 
 ## Installation
 
-Prerequisites:<br>
+##### Prerequisites:
 [GLFW](https://www.glfw.org/) should be included as static lib, but if needed:<br>
 Install on .brew: https://formulae.brew.sh/formula/glfw<br>
 
