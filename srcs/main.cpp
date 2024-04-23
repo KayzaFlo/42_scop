@@ -13,11 +13,13 @@ Vec2	horizontalAxis = {};
 Vec2	verticalAxis = {};
 Vec2	zAxis = {};
 int		currentShaderId = 0;
+int		needShaderUpdate = 0;
 
 Camera	camera(Vec3(0.0f, 1.8f, 6.0f));
 
-// std::map< std::string, Shader * >	shaders;
 std::vector<Shader *>		shaders;
+
+Texture defaultTex = { 0, "texture_diffuse", "resources/default.jpg" };
 
 GLFWwindow*	setupLibs() {
 	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
@@ -49,15 +51,18 @@ void	render( GLFWwindow *window, Model *obj ) {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	// uniformColor shader
-	// float timeValue = glfwGetTime();
+	float timeValue = glfwGetTime();
+	Vec3 col = {0.9608, 0.3176, 0.102};
+	col = col * abs( sin(timeValue) );
 	// float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-	// shader.setUniform("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
-
+	obj->getShader()->setUniform("ourColor", col.x, col.y, col.z);
+	// default texture shader
+	glActiveTexture(GL_TEXTURE0 + 9);
+	obj->getShader()->setUniform("grid", 9);
+	glBindTexture(GL_TEXTURE_2D, defaultTex.id);
 
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
-
-	// shader->use();
 	
 	Mat4	view = camera.GetViewMatrix();
 	Mat4	projection = Mat4::Perspective(radians(camera.zoom), (float)w/(float)h, 0.1f, 100);
@@ -80,7 +85,6 @@ int main( int argc, char **argv )
 	if ( argc != 2 )
 		return 1;
 
-	// std::cout << "START" << std::endl;
 	GLFWwindow*	window;
 	try {
 		window = setupLibs();
@@ -88,14 +92,12 @@ int main( int argc, char **argv )
 		std::cerr << e.what() << '\n';
 		return -1;
 	}
-	// std::string	vsPath = "srcs/shaders/" + std::string(argv[2]) + ".vs";
-	// std::string	fsPath = "srcs/shaders/" + std::string(argv[2]) + ".fs";
-	
-	// int	currentShader = 0;
+
 	shaders.push_back( new Shader( "srcs/shaders/basicLight.vs", "srcs/shaders/basicLight.fs" ) );
 	shaders.push_back( new Shader( "srcs/shaders/normal.vs", "srcs/shaders/normal.fs" ) );
 	shaders.push_back( new Shader( "srcs/shaders/mat.vs", "srcs/shaders/mat.fs" ) );
 	shaders.push_back( new Shader( "srcs/shaders/vertCol.vs", "srcs/shaders/vertCol.fs" ) );
+	shaders.push_back( new Shader( "srcs/shaders/texture.vs", "srcs/shaders/texture.fs" ) );
 
 	// On Resized
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -104,18 +106,20 @@ int main( int argc, char **argv )
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  
 	glfwSetScrollCallback(window, scroll_callback);
 
-    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    // stbi_set_flip_vertically_on_load(true);
-
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Load Model
 	Model *	model =  new Model(argv[1], shaders[0]);
 
+	defaultTex.setupTex();
+
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
-		model->setShader( shaders[currentShaderId % shaders.size() ] );
+		if ( needShaderUpdate ) {
+			needShaderUpdate = 0;
+			model->setShader( shaders[currentShaderId % shaders.size() ] );
+		}
 		render( window, model );
 	}
 	
@@ -123,10 +127,8 @@ int main( int argc, char **argv )
 	glfwTerminate();
 
 	// shaders.clear();
-	delete(shaders[0]);
-	delete(shaders[1]);
-	delete(shaders[2]);
-	delete(shaders[3]);
+	for (size_t i = 0; i < shaders.size(); i++)
+		delete(shaders[i]);
 	delete(model);
 
 	return 0;

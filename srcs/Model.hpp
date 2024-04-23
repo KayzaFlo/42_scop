@@ -35,9 +35,6 @@ public:
 			delete(meshes[i]);
 	}
 	void	Draw() {
-		// transform = Matrix4x4::identity;
-		// Vector3 tmp = Vector3( position.x, position.y, position.z );
-		// transform = Matrix4x4::Translate(transform, tmp );
 		shader->setUniform("model", transform);
 		shader->use();
 
@@ -47,7 +44,10 @@ public:
 	}
 
 	Shader *	getShader() { return shader; }
-	void		setShader( Shader * s ) { shader = s; }
+	void		setShader( Shader * s ) {
+		shader = s;
+		shader->use();
+	}
 
 private:
 	std::vector<Mesh*>	meshes;

@@ -12,23 +12,9 @@
 
 #include <stb_image.h>
 
+#include "Texture.hpp"
 #include "Mesh.hpp"
 #include "betterLog.h"
-
-// struct Material {
-// 	std::string				name;			// newmtl
-// 	s_Vector3				ambient;		// Ka
-// 	s_Vector3				diffuse;		// Kd
-// 	s_Vector3				emissive;		// Ke
-// 	s_Vector3				specular;		// Ks
-// 	float					specularExp;	// Ns
-// 	float					dissolved;		// d
-// 	// float					transparency;	// Tr (inverted: Tr = 1 - d) // d or Tr depend of implementation
-// 	// s_Vector3				transmissionFilterColor;	// Tf
-// 	float					opticalDensity;	// Ni
-// 	uint					illum;			// i ( different illumination models, id from 0 to 10, illum 2 seems basics ) 
-// 	std::vector<Texture>	textureMaps;	// map_Ka, map_Kd, map_Ks, map_Ns, map_d, map_bump/bump, disp, decal
-// };
 
 class Mtlimp
 {
@@ -50,7 +36,7 @@ private:
 
 		file.open(path.c_str(), std::ifstream::in);
 		if (file.is_open() == false)
-			std::cerr << C_RED << "open .obj file error" << C_RST << std::endl;
+			std::cerr << C_RED << "open .mtl file error" << C_RST << std::endl;
 		buffer << file.rdbuf();
 
 		Material	currentMat;
@@ -65,6 +51,11 @@ private:
 				continue;
 			else if ( token == "newmtl" ) {
 				if ( currentMat.name != "" ) {
+					if ( currentMat.textureMaps.size() == 0 ) {
+						Texture	tex = { 0, "texture_specular", nullptr };
+						tex.setupTex();
+						currentMat.textureMaps.push_back(tex);
+					}
 					materials.push_back(currentMat);
 					currentMat.textureMaps.clear(); //
 				}
@@ -144,33 +135,38 @@ private:
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
-				std::string	fileName = token;
-				uint	texId;
-				setupTex( &texId, directory + token);
-				currentMat.textureMaps.push_back(Texture{ texId, "texture_diffuse", directory + token });
+				std::string		path = directory + token;
+				Texture	tex = { 0, "texture_diffuse", path.c_str() };
+				tex.setupTex();
+				currentMat.textureMaps.push_back(tex);
 			}
 			else if ( token == "map_Ks" ) {
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
-				std::string	fileName = token;
-				uint	texId;
-				setupTex( &texId, directory + token);
-				currentMat.textureMaps.push_back(Texture{ texId, "texture_specular", directory + token });
+				std::string		path = directory + token;
+				Texture	tex = { 0, "texture_specular", path.c_str() };
+				tex.setupTex();
+				currentMat.textureMaps.push_back(tex);
 			}
 			else if ( token == "map_Bump" ) {
 				std::getline(line_buf, token, ' ');
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
-				std::string	fileName = token;
-				uint	texId;
-				setupTex( &texId, directory + token);
-				currentMat.textureMaps.push_back(Texture{ texId, "texture_bump", directory + token });
+				std::string		path = directory + token;
+				Texture	tex = { 0, "texture_bump", path.c_str() };
+				tex.setupTex();
+				currentMat.textureMaps.push_back(tex);
 			}
 			else {
 				std::cerr << C_RED << "\'" << token << "\' is not a valid .obj parameter" << C_RST << std::endl;
 				// exit(1);
 			}
+		}
+		if ( currentMat.textureMaps.size() == 0 ) {
+				Texture	tex = { 0, "texture_diffuse", nullptr };
+				tex.setupTex();
+				currentMat.textureMaps.push_back(tex);
 		}
 		materials.push_back(currentMat);
 	}
@@ -186,31 +182,6 @@ private:
 		}
 		return 1;
 	}
-
-	void	setupTex( uint32_t *texture, std::string path ) {
-		// uint32_t	texture;
-		glGenTextures(1, texture);
-		glBindTexture(GL_TEXTURE_2D, *texture);
-
-		// tx wraping / filtering options (on the currently bound texture object)
-		// float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-		// glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // defaut is GL_REPEAT
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// when texture minified	// mipmap onloy useful for min
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// when texture magnified
-
-		int	width, height, nrChannels;
-		u_char	*data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-		if (data) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		} else
-			std::cerr << C_BRED << "Failed to load texture \'" << path << "\'" << C_RST << std::endl;
-		stbi_image_free(data);
-		// glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
 };
 
 

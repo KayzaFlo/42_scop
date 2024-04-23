@@ -6,6 +6,7 @@
 #include <vector>
 #include <scopm.hpp>
 
+#include "Texture.hpp"
 #include "Shader.hpp"
 #include "scop.h"
 
@@ -14,19 +15,18 @@ class Mesh
 public:
 	std::string				name;					// o
 	std::vector<Vertex>		vertices;				// v // vn // vt
-	// ???											// s
-	std::vector<uint32_t>	indices;				// f?
+	std::vector<uint32_t>	indices;				// f
 	std::vector<Texture>	textures;				// tex
 	Material				mat;					// usemtl, mtllib
 	uint	VAO;
 
-	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material & mat) {
+	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material * mat) {
 		// std::cout << "Mesh's constructor called (" << name << ")" << std::endl;
 		this->name = name;
 		this->vertices = vertices;
 		this->indices = indices;
 		// this->mat = mat;
-		this->textures = mat.textureMaps;
+		this->textures = mat->textureMaps;
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
@@ -57,9 +57,7 @@ public:
 			else if(name == "texture_bump")
 				number = std::to_string(bumpNbr++);
 
-			// shader->setUniform( (name + number).c_str(), (int)i );
-            glUniform1i(glGetUniformLocation(shader->ID, (name + number).c_str()), i);
-			// (void)shader;
+			shader->setUniform( (name + number).c_str(), (int)i );
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
 		// draw mesh

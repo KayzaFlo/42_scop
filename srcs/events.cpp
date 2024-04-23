@@ -8,10 +8,6 @@
 float	lastX, lastY;
 bool	firstMouse = true;
 
-// Vec2	horizontalAxis;
-// Vec2	verticalAxis;
-// Vec2	zAxis;
-
 void	framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	(void)window;
 	glViewport(0, 0, width, height);
@@ -32,8 +28,10 @@ void keypressed_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )	// Quit with Escape key
 		glfwSetWindowShouldClose(window, true);
 
-	if( key == GLFW_KEY_F && action == GLFW_PRESS )	// Quit with Escape key
+	if( key == GLFW_KEY_F && action == GLFW_PRESS )	{
+		needShaderUpdate = 1;
 		currentShaderId++;
+	}
 		
     if ( glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS )
 		verticalAxis.x = 1;

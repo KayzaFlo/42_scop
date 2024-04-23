@@ -8,14 +8,16 @@
 #include <cmath>
 #include <vector>
 
+#include "Texture.hpp"
+
 #include "Camera.hpp"
 extern Camera	camera;
 
-struct Texture {
-	uint32_t	id;
-	std::string	type;
-	std::string	path;
-};
+// struct Texture {
+// 	uint32_t	id;
+// 	std::string	type;
+// 	std::string	path;
+// };
 
 struct Vertex {
 	Vec3	position;
@@ -29,6 +31,7 @@ extern Vec2	verticalAxis;
 extern Vec2	zAxis;
 
 extern int	currentShaderId;
+extern int	needShaderUpdate;
 
 struct s_Face
 {
@@ -58,7 +61,7 @@ struct s_Object
 	std::string				name;
 	std::vector<s_Face>		faces;
 	// std::string				matName;
-	Material				mat;
+	Material *				mat;
 };
 
 

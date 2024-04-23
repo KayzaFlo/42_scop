@@ -5,9 +5,14 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec2 TexCoord;
 
-uniform sampler2D ourTexture;
+uniform sampler2D grid;
+uniform sampler2D a;
+uniform sampler2D texture_specular1;
+uniform sampler2D texture_diffuse1;
 
 void main()
 {
-   FragColor = texture(ourTexture, TexCoord);
+   FragColor = texture(texture_diffuse1, TexCoord);
+   FragColor = texture(grid, TexCoord);
+//    FragColor = texture(a, TexCoord);
 }

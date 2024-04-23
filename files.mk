@@ -14,7 +14,7 @@ GLAD = 		lib/glad/
 STB = 		lib/stb/
 SCOPM = 	$(SOURCEDIR)scopm/
 
-LIB_GLFW =	$(GLFW)/lib-universal/libglfw3.a
+LIB_GLFW =	$(GLFW)/libglfw3.a
 
 SRC =		$(MAIN_FILE) \
 			$(SOURCEDIR)Shader.cpp \

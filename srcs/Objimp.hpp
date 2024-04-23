@@ -10,32 +10,10 @@
 #include <sstream>
 #include <iostream>
 
+#include "Texture.hpp"
 #include "Mesh.hpp"
 #include "Mtlimp.hpp"
 #include "betterLog.h"
-
-// struct Material {
-// 	std::string				name;
-// 	std::vector<Texture*>	textures;
-// };
-
-// struct s_Face
-// {
-// 	std::vector<uint>	iPosition;
-// 	std::vector<uint>	iNormal;
-// 	std::vector<uint>	iTexCoord;
-// 	int					s;
-// };
-
-// struct s_Object
-// {
-// 	std::string				name;
-// 	std::vector<s_Face>		faces;
-// 	// std::string				matName;
-// 	Material				mat;
-// };
-
-
 
 class Objimp
 {
@@ -138,10 +116,13 @@ private:
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
 				for (size_t i = 0; i < materials.size(); i++) {
-					if ( token == materials[i].name )
-						currentObject.mat = materials[i];
+					if ( token == materials[i].name ) {
+						currentObject.mat = &materials[i];
+					}
 				}
-				continue;
+				if ( currentObject.mat == nullptr )
+					std::cerr << C_RED << "\'" << token << "\' material not found" << C_RST << std::endl;
+				// continue;
 			}
 			else if ( token == "s" ) {
 				std::getline(line_buf, token, ' ');
@@ -164,13 +145,16 @@ private:
 						// face.iPosition.push_back(std::stoi(sub_token.c_str()) - 1);
 						continue;
 					}
-					face.iPosition.push_back(std::stoi(sub_token) - 1);
+					if (!is_empty(sub_token.c_str()))
+						face.iPosition.push_back(std::stoi(sub_token) - 1);
 					if ( !std::getline(token_buf, sub_token, '/') )
 						continue;
-					face.iTexCoord.push_back(std::stoi(sub_token) - 1);
+					if (!is_empty(sub_token.c_str()))
+						face.iTexCoord.push_back(std::stoi(sub_token) - 1);
 					if ( !std::getline(token_buf, sub_token, '/') )
 						continue;
-					face.iNormal.push_back(std::stoi(sub_token) - 1);
+					if (!is_empty(sub_token.c_str()))
+						face.iNormal.push_back(std::stoi(sub_token) - 1);
 				}
 				currentObject.faces.push_back(face);
 			}
@@ -178,6 +162,14 @@ private:
 				std::cerr << C_RED << "\'" << token[0] << "\' is not a valid .obj parameter" << C_RST << std::endl;
 				// exit(1);
 			}
+		}
+
+		if ( currentObject.mat == nullptr ) {
+			materials.push_back( {} );
+			currentObject.mat = &materials[0];
+			Texture tex = { 0, "texture_diffuse", 0 };
+			tex.setupTex();
+			currentObject.mat->textureMaps.push_back(tex);
 		}
 		objects.push_back(currentObject);
 	}
