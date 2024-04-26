@@ -19,7 +19,7 @@ Camera	camera(Vec3(0.0f, 1.8f, 6.0f));
 
 std::vector<Shader *>		shaders;
 
-Texture defaultTex = { 0, "texture_diffuse", "resources/default.jpg" };
+Texture defaultTex = Texture ( "texture_diffuse", "resources/chaton.bmp" );
 
 GLFWwindow*	setupLibs() {
 	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
@@ -54,7 +54,6 @@ void	render( GLFWwindow *window, Model *obj ) {
 	float timeValue = glfwGetTime();
 	Vec3 col = {0.9608, 0.3176, 0.102};
 	col = col * abs( sin(timeValue) );
-	// float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 	obj->getShader()->setUniform("ourColor", col.x, col.y, col.z);
 	// default texture shader
 	glActiveTexture(GL_TEXTURE0 + 9);

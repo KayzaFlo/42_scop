@@ -159,15 +159,15 @@ private:
 				currentObject.faces.push_back(face);
 			}
 			else {
-				std::cerr << C_RED << "\'" << token[0] << "\' is not a valid .obj parameter" << C_RST << std::endl;
-				// exit(1);
+				std::cerr << C_YEL << "\'" << token << "\' is not a valid .obj parameter and has been ignored" << C_RST << std::endl;
 			}
 		}
 
 		if ( currentObject.mat == nullptr ) {
 			materials.push_back( {} );
 			currentObject.mat = &materials[0];
-			Texture tex = { 0, "texture_diffuse", 0 };
+			// Texture tex = { 0, "texture_diffuse", 0 };
+			Texture	tex = Texture( "texture_diffuse", nullptr );
 			tex.setupTex();
 			currentObject.mat->textureMaps.push_back(tex);
 		}

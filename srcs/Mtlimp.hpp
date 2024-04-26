@@ -10,8 +10,6 @@
 #include <sstream>
 #include <iostream>
 
-#include <stb_image.h>
-
 #include "Texture.hpp"
 #include "Mesh.hpp"
 #include "betterLog.h"
@@ -52,7 +50,7 @@ private:
 			else if ( token == "newmtl" ) {
 				if ( currentMat.name != "" ) {
 					if ( currentMat.textureMaps.size() == 0 ) {
-						Texture	tex = { 0, "texture_specular", nullptr };
+						Texture	tex = Texture( "texture_specular", nullptr );
 						tex.setupTex();
 						currentMat.textureMaps.push_back(tex);
 					}
@@ -136,7 +134,7 @@ private:
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
 				std::string		path = directory + token;
-				Texture	tex = { 0, "texture_diffuse", path.c_str() };
+				Texture	tex = Texture( "texture_diffuse", path.c_str() );
 				tex.setupTex();
 				currentMat.textureMaps.push_back(tex);
 			}
@@ -145,7 +143,7 @@ private:
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
 				std::string		path = directory + token;
-				Texture	tex = { 0, "texture_specular", path.c_str() };
+				Texture	tex = Texture( "texture_specular", path.c_str() );
 				tex.setupTex();
 				currentMat.textureMaps.push_back(tex);
 			}
@@ -154,17 +152,16 @@ private:
 				while (is_empty(token.c_str()))
 					std::getline(line_buf, token, ' ');
 				std::string		path = directory + token;
-				Texture	tex = { 0, "texture_bump", path.c_str() };
+				Texture	tex = Texture( "texture_bump", path.c_str() );
 				tex.setupTex();
 				currentMat.textureMaps.push_back(tex);
 			}
 			else {
-				std::cerr << C_RED << "\'" << token << "\' is not a valid .obj parameter" << C_RST << std::endl;
-				// exit(1);
+				std::cerr << C_YEL << "\'" << token << "\' is not a valid .obj parameter and has been ignored" << C_RST << std::endl;
 			}
 		}
 		if ( currentMat.textureMaps.size() == 0 ) {
-				Texture	tex = { 0, "texture_diffuse", nullptr };
+				Texture	tex = Texture( "texture_diffuse", path.c_str() );
 				tex.setupTex();
 				currentMat.textureMaps.push_back(tex);
 		}

@@ -6,7 +6,6 @@
 #include <vector>
 #include <scopm.hpp>
 #include <sys/stat.h>
-#include <stb_image.h>
 
 #include "Shader.hpp"
 #include "Mesh.hpp"

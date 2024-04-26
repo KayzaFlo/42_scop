@@ -11,7 +11,6 @@ MAIN_FILE = $(SOURCEDIR)main.cpp
 
 GLFW = 		lib/glfw/
 GLAD = 		lib/glad/
-STB = 		lib/stb/
 SCOPM = 	$(SOURCEDIR)scopm/
 
 LIB_GLFW =	$(GLFW)/libglfw3.a
@@ -23,8 +22,7 @@ SRC =		$(MAIN_FILE) \
 			$(SCOPM)src/Vec3.cpp \
 			$(SCOPM)src/Vec4.cpp \
 			$(SCOPM)src/Mat4.cpp \
-			$(GLAD)src/glad.cpp \
-			$(STB)src/stb_image.cpp
+			$(GLAD)src/glad.cpp
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 
 
