@@ -161,7 +161,7 @@ private:
 			}
 		}
 		if ( currentMat.textureMaps.size() == 0 ) {
-				Texture	tex = Texture( "texture_diffuse", path.c_str() );
+				Texture	tex = Texture( "texture_diffuse", nullptr );
 				tex.setupTex();
 				currentMat.textureMaps.push_back(tex);
 		}

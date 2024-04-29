@@ -30,6 +30,10 @@ struct Texture {
 	int	read_header() {
 		FILE	*file;
 
+		if ( path == nullptr ) {
+			std::cerr << C_YEL << "No bmp file found: using default tex" << C_RST << std::endl;
+			return (1);
+		}
 		if ((file = fopen(path, "r")) == NULL) {
 			std::cerr << C_BRED << "bmp file opening (fopen) failed." << C_RST << std::endl;
 			return (1);
@@ -37,7 +41,6 @@ struct Texture {
 		int	tmp;
 		fseek(file, 0, SEEK_SET);
 		fread(&tmp, 2, 1, file);
-		// printf("%x\n", tmp);
 		if (tmp != 0x4D42) {
 			std::cerr << C_BRED << "\'" << path << "\' is not a bmp file." << C_RST << std::endl;
 			return (1);
@@ -59,7 +62,6 @@ struct Texture {
 	void	get_image(char *buffer, int i) {
 		int	k;
 		int	j;
-		// int	size;
 
 		k = 0;
 		size = size * 2;
@@ -94,29 +96,19 @@ struct Texture {
 		lseek(fd, 54, SEEK_SET);
 		i = read(fd, buffer, size);
 		get_image(buffer, i);
-		// ft_strdel((char**)&buffer);
 		free(buffer);
 		close(fd);
 		return (0);
 	}
 
 	void	setupTex() {
-		// uint32_t	texture;
 		glGenTextures(1, &id);
 		glBindTexture(GL_TEXTURE_2D, id);
 
-		// tx wraping / filtering options (on the currently bound texture object)
-		// float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-		// glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // defaut is GL_REPEAT
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// when texture minified	// mipmap onloy useful for min
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// when texture magnified
 
-		// int	width, height;
-		// int	nrChannels;
-		// u_char	*data = nullptr;
-		if ( path == nullptr || load_bmp() == 1) {
+		if ( load_bmp() == 1) {
 			img = (u_char*)calloc(16, sizeof(GL_UNSIGNED_BYTE));
 			memset(img, 255, sizeof(GL_UNSIGNED_BYTE) * 16);
 			w = 4;
@@ -127,8 +119,6 @@ struct Texture {
 			glGenerateMipmap(GL_TEXTURE_2D);
 		} else
 			std::cerr << C_BRED << "Failed to load texture \'" << path << "\'" << C_RST << std::endl;
-		// stbi_image_free(data);
-		// glBindTexture(GL_TEXTURE_2D, 0);
 		free(img);
 	}
 };
