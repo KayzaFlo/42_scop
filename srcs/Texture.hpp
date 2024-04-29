@@ -55,7 +55,7 @@ struct Texture {
 		sl = w * opp;
 		w < 0 ? w = -w : 0;
 		h < 0 ? h = -h : 0;
-		size = sl * h;
+		size = sl * h * 2;
 		return (0);
 	}
 
@@ -64,7 +64,6 @@ struct Texture {
 		int	j;
 
 		k = 0;
-		size = size * 2;
 		img = (u_char*)calloc(size, sizeof(u_char));
 		while (i >= 0)
 		{

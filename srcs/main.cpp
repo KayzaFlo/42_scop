@@ -17,9 +17,7 @@ int		needShaderUpdate = 0;
 
 Camera	camera(Vec3(0.0f, 1.8f, 6.0f));
 
-std::vector<Shader *>		shaders;
-
-Texture defaultTex = Texture ( "texture_diffuse", "resources/chaton.bmp" );
+Texture *	defaultTex;
 
 GLFWwindow*	setupLibs() {
 	glfwInitHint (GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);	// for MacOS, otherwise cd automatically to "Contents/Resources"
@@ -58,7 +56,7 @@ void	render( GLFWwindow *window, Model *obj ) {
 	// default texture shader
 	glActiveTexture(GL_TEXTURE0 + 9);
 	obj->getShader()->setUniform("grid", 9);
-	glBindTexture(GL_TEXTURE_2D, defaultTex.id);
+	glBindTexture(GL_TEXTURE_2D, defaultTex->id);
 
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
@@ -81,6 +79,8 @@ void	render( GLFWwindow *window, Model *obj ) {
 
 int main( int argc, char **argv )
 {
+	std::vector<Shader *>		shaders;
+
 	if ( argc != 2 )
 		return 1;
 
@@ -108,10 +108,11 @@ int main( int argc, char **argv )
 	glEnable(GL_DEPTH_TEST);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	defaultTex = new Texture ( "texture_diffuse", "resources/chaton.bmp" );
+	defaultTex->setupTex();
+
 	// Load Model
 	Model *	model =  new Model(argv[1], shaders[0]);
-
-	defaultTex.setupTex();
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
@@ -129,6 +130,7 @@ int main( int argc, char **argv )
 	for (size_t i = 0; i < shaders.size(); i++)
 		delete(shaders[i]);
 	delete(model);
+	delete(defaultTex);
 
 	return 0;
 }
